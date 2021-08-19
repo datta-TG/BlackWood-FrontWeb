@@ -419,11 +419,12 @@ export default {
           const formData = new FormData()
           formData.append('file', this.formFile.file)
           services.uploadFile(this.formFile.type, formData).then(res => {
-            if (res.status === 200) {
+            if (res.status === 201) {
               this.uploadMap = false
             } else if (res.status === 206) {
               this.uploadMap = true
               const { data } = res
+              this.importedFileId = data.imported_file_id
               this.columnsData = data
               this.loadColumns()
             }
@@ -444,7 +445,7 @@ export default {
       })
     },
     loadColumns() {
-      const { missing_columns, missing_key_columns, unknown_columns } = this.data
+      const { missing_columns, missing_key_columns, unknown_columns } = this.columnsData
       this.missingColumns = missing_columns.map(item => {
         const column = { text: item, map: false }
         return column
@@ -497,7 +498,9 @@ export default {
       })
     },
     finishUpload() {
-      services.mapColumns(this.importedFileId, this.mapData).then(res => console.log(res))
+      if (this.uploadMap) {
+        services.mapColumns(this.importedFileId, this.mapData).then(res => console.log(res))
+      }
       this.$refs.upload.reset()
       this.typeOptions = []
       this.formFile = {
