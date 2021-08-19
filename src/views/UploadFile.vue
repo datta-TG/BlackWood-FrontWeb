@@ -412,8 +412,6 @@ export default {
     },
     uploadFile() {
       return new Promise((resolve, reject) => {
-        this.uploadMap = true
-        resolve(true)
         if (Boolean(this.formFile.file) && this.formFile.type) {
           const formData = new FormData()
           formData.append('file', this.formFile.file)
