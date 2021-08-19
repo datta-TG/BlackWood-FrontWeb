@@ -2,13 +2,15 @@
   <div>
     <b-card>
       <form-wizard
-        color="#7367F0"
+        ref="upload"
+        color="#44A1C2"
         :title="null"
         :subtitle="null"
         shape="circle"
         finish-button-text="Finish"
         back-button-text="Previous"
         class="steps-transparent mb-3"
+        @on-complete="finishUpload"
       >
         <tab-content
           title="Upload File"
@@ -75,210 +77,241 @@
         <tab-content
           title="View Data"
         >
-          <xlsx-read :file="formFile.file">
+          <xlsx-read
+            v-if="formFile.file"
+            :file="formFile.file"
+          >
             <xlsx-table />
           </xlsx-read>
         </tab-content>
         <tab-content
           title="Map Columns"
+          :before-change="validationMap"
         >
           <div v-if="uploadMap">
-            <b-row class="mb-2">
-              <b-col md="6">
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Uknown Columns in File
-                </h6>
-                <!-- draggable -->
-                <draggable
-                  :list="unknownColumns"
-                  tag="ul"
-                  :group="{ name: 'unknownColumns', put: false }"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in unknownColumns"
-                    :key="index"
-                    tag="li"
+            <draggable
+              :group="{name: 'unknownColumns', put: true, pull: false}"
+              ghost-class="display-none"
+              draggable=".draggable"
+              class="my-8 mx-12"
+            >
+              <b-row class="mb-2">
+                <b-col md="6">
+                  <h6 class="text-primary font-weight-bold mb-2">
+                    Uknown Columns in File
+                  </h6>
+                  <!-- draggable -->
+                  <draggable
+                    :list="unknownColumns"
+                    tag="ul"
+                    :group="{ name: 'unknownColumns', put: false }"
+                    class="list-group list-group-flush cursor-move"
                   >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="info"
-                        :text="(index+1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
+                    <b-list-group-item
+                      v-for="(listItem, index) in unknownColumns"
+                      :key="index"
+                      tag="li"
+                    >
+                      <div class="d-flex">
+                        <b-avatar
+                          variant="info"
+                          :text="(index+1).toString()"
+                        />
+                        <div class="ml-25">
+                          <b-card-text class="mb-0 font-weight-bold">
+                            {{ listItem.text }}
+                          </b-card-text>
+                        </div>
                       </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-              <b-col md="6">
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Trash
-                </h6>
-                <!-- draggable -->
-                <draggable
-                  :list="trashColumns"
-                  tag="ul"
-                  group="unknownColumns"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in trashColumns"
-                    :key="index"
-                    tag="li"
+                    </b-list-group-item>
+                  </draggable>
+                </b-col>
+                <b-col md="6">
+                  <h6 class="text-primary font-weight-bold mb-2">
+                    Trash
+                  </h6>
+                  <!-- draggable -->
+                  <draggable
+                    :list="trashColumns"
+                    tag="ul"
+                    group="unknownColumns"
+                    class="list-group list-group-flush cursor-move"
                   >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="info"
-                        :text="(index+1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
+                    <b-list-group-item
+                      v-for="(listItem, index) in trashColumns"
+                      :key="index"
+                      tag="li"
+                    >
+                      <div class="d-flex">
+                        <b-avatar
+                          variant="info"
+                          :text="(index+1).toString()"
+                        />
+                        <div class="ml-25">
+                          <b-card-text class="mb-0 font-weight-bold">
+                            {{ listItem.text }}
+                          </b-card-text>
+                        </div>
                       </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-            </b-row>
-            <b-row class="mb-2">
-              <b-col md="6">
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Missing Columns in File Type
-                </h6>
+                    </b-list-group-item>
+                  </draggable>
+                </b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col md="6">
+                  <h6 class="text-primary font-weight-bold mb-2">
+                    Missing Columns in File Type
+                  </h6>
 
-                <!-- draggable -->
-                <draggable
-                  :list="missingColumns"
-                  tag="ul"
-                  :group="{ name: 'unknownColumns', pull: 'clone', put: false }"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in missingColumns"
-                    :key="index"
-                    tag="li"
+                  <!-- draggable -->
+                  <draggable
+                    :list="missingColumns"
+                    tag="ul"
+                    :group="{ name: 'unknownColumns', pull: 'clone', put: false }"
+                    class="list-group list-group-flush cursor-move"
                   >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="danger"
-                        :text="(index+1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
+                    <b-list-group-item
+                      v-for="(listItem, index) in missingColumns"
+                      :key="index"
+                      tag="li"
+                    >
+                      <div class="d-flex">
+                        <b-avatar
+                          variant="danger"
+                          :text="(index+1).toString()"
+                        />
+                        <div class="ml-25">
+                          <b-card-text class="mb-0 font-weight-bold">
+                            {{ listItem.text }}
+                          </b-card-text>
+                        </div>
                       </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-              <b-col
-                md="6"
-                class="mt-sm-2 mt-md-0"
+                    </b-list-group-item>
+                  </draggable>
+                </b-col>
+                <b-col
+                  md="6"
+                  class="mt-sm-2 mt-md-0"
+                >
+                  <h6 class="text-primary font-weight-bold mb-2">
+                    Assing Missing Columns
+                  </h6>
+
+                  <!-- draggable -->
+                  <draggable
+                    :list="missingColumnsAssing"
+                    tag="ul"
+                    group="unknownColumns"
+                    class="list-group list-group-flush cursor-move"
+                  >
+                    <b-list-group-item
+                      v-for="(listItem, index) in missingColumnsAssing"
+                      :key="index"
+                      tag="li"
+                    >
+                      <div class="d-flex">
+                        <b-avatar
+                          variant="info"
+                          :text="(index+1).toString()"
+                        />
+                        <div class="ml-25">
+                          <b-card-text class="mb-0 font-weight-bold">
+                            {{ listItem.text }}
+                          </b-card-text>
+                        </div>
+                      </div>
+                    </b-list-group-item>
+                  </draggable>
+                </b-col>
+              </b-row>
+              <b-row class="mb-2">
+                <b-col md="6">
+                  <h6 class="text-primary font-weight-bold mb-2">
+                    Missing Key Columns in File Type
+                  </h6>
+
+                  <!-- draggable -->
+                  <draggable
+                    :list="missingKeyColumns"
+                    tag="ul"
+                    :group="{ name: 'unknownColumns', pull: 'clone', put: false }"
+                    class="list-group list-group-flush cursor-move"
+                  >
+                    <b-list-group-item
+                      v-for="(listItem, index) in missingKeyColumns"
+                      :key="index"
+                      tag="li"
+                    >
+                      <div class="d-flex">
+                        <b-avatar
+                          variant="warning"
+                          :text="(index+1).toString()"
+                        />
+                        <div class="ml-25">
+                          <b-card-text class="mb-0 font-weight-bold">
+                            {{ listItem.text }}
+                          </b-card-text>
+                        </div>
+                      </div>
+                    </b-list-group-item>
+                  </draggable>
+                </b-col>
+                <b-col
+                  md="6"
+                  class="mt-sm-2 mt-md-0"
+                >
+                  <h6 class="text-primary font-weight-bold mb-2">
+                    Assing Missing Key Columns
+                  </h6>
+
+                  <!-- draggable -->
+                  <draggable
+                    :list="missingKeyColumnsAssing"
+                    tag="ul"
+                    group="unknownColumns"
+                    class="list-group list-group-flush cursor-move"
+                  >
+                    <b-list-group-item
+                      v-for="(listItem, index) in missingKeyColumnsAssing"
+                      :key="index"
+                      tag="li"
+                    >
+                      <div class="d-flex">
+                        <b-avatar
+                          variant="info"
+                          :text="(index+1).toString()"
+                        />
+                        <div class="ml-25">
+                          <b-card-text class="mb-0 font-weight-bold">
+                            {{ listItem.text }}
+                          </b-card-text>
+                        </div>
+                      </div>
+                    </b-list-group-item>
+                  </draggable>
+                </b-col>
+              </b-row>
+            </draggable>
+            <!-- submit and reset -->
+            <div>
+              <b-button
+                v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+                type="button"
+                variant="warning"
+                class="mr-1"
+                @click="discardFile"
               >
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Assing Missing Columns
-                </h6>
-
-                <!-- draggable -->
-                <draggable
-                  :list="missingColumnsAssing"
-                  tag="ul"
-                  group="unknownColumns"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in missingColumnsAssing"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="info"
-                        :text="(index+1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-            </b-row>
-            <b-row class="mb-2">
-              <b-col md="6">
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Missing Key Columns in File Type
-                </h6>
-
-                <!-- draggable -->
-                <draggable
-                  :list="missingKeyColumns"
-                  tag="ul"
-                  :group="{ name: 'unknownColumns', pull: 'clone', put: false }"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in missingKeyColumns"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="warning"
-                        :text="(index+1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-              <b-col
-                md="6"
-                class="mt-sm-2 mt-md-0"
+                Discard File
+              </b-button>
+              <b-button
+                v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+                type="reset"
+                variant="outline-secondary"
+                @click="loadColumns"
               >
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Assing Missing Key Columns
-                </h6>
-
-                <!-- draggable -->
-                <draggable
-                  :list="missingKeyColumnsAssing"
-                  tag="ul"
-                  group="unknownColumns"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in missingKeyColumnsAssing"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="info"
-                        :text="(index+1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-            </b-row>
+                Reload Columns
+              </b-button>
+            </div>
           </div>
           <div v-else>
             <!-- success -->
@@ -349,11 +382,13 @@ export default {
         file: null,
       },
       importedFileId: null,
+      columnsData: null,
       uploadMap: false,
-      unknownColumns: [{ text: 'x' }, { text: 'y' }, { text: 'z' }],
-      missingColumns: [{ text: 'a', map: true }],
+      mapData: null,
+      unknownColumns: [],
+      missingColumns: [],
       missingColumnsAssing: [],
-      missingKeyColumns: [{ text: 'b', map: true }],
+      missingKeyColumns: [],
       missingKeyColumnsAssing: [],
       trashColumns: [],
     }
@@ -378,6 +413,8 @@ export default {
     },
     uploadFile() {
       return new Promise((resolve, reject) => {
+        this.uploadMap = true
+        resolve(true)
         if (Boolean(this.formFile.file) && this.formFile.type) {
           const formData = new FormData()
           formData.append('file', this.formFile.file)
@@ -387,18 +424,8 @@ export default {
             } else if (res.status === 206) {
               this.uploadMap = true
               const { data } = res
-              this.missingColumns = data.missing_columns.map(item => {
-                const column = { text: item, map: true }
-                return column
-              })
-              this.missingKeyColumns = data.missing_key_columns.map(item => {
-                const column = { text: item, map: true }
-                return column
-              })
-              this.unknownColumns = data.unknown_columns.map(item => {
-                const column = { text: item }
-                return column
-              })
+              this.columnsData = data
+              this.loadColumns()
             }
             resolve(true)
           }).catch(err => console.log(err))
@@ -413,6 +440,103 @@ export default {
             },
           })
           reject()
+        }
+      })
+    },
+    loadColumns() {
+      const { missing_columns, missing_key_columns, unknown_columns } = this.data
+      this.missingColumns = missing_columns.map(item => {
+        const column = { text: item, map: false }
+        return column
+      })
+      this.missingKeyColumns = missing_key_columns.map(item => {
+        const column = { text: item, map: false }
+        return column
+      })
+      this.unknownColumns = unknown_columns.map(item => {
+        const column = { text: item, map: true }
+        return column
+      })
+    },
+    validationMap() {
+      return new Promise((resolve, reject) => {
+        if (this.missingColumns.length !== this.missingColumnsAssing.length || this.missingKeyColumns.length !== this.missingKeyColumnsAssing.length) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Warning',
+              icon: 'BellIcon',
+              text: 'Please complete the missing columns 🙏🏼.',
+              variant: 'warning',
+            },
+          })
+          reject()
+        } else {
+          resolve(true)
+          const mapData = {
+            leave_extra_columns: false,
+            abort: false,
+            columns: [],
+          }
+          this.missingColumns.forEach((element, index) => {
+            mapData.columns.push({
+              missing_column: element.text,
+              unknown_column: this.missingColumnsAssing[index].text,
+              map: this.missingColumnsAssing[index].map,
+            })
+          })
+          this.missingKeyColumns.forEach((element, index) => {
+            mapData.columns.push({
+              missing_column: element.text,
+              unknown_column: this.missingKeyColumnsAssing[index].text,
+              map: this.missingKeyColumnsAssing[index].map,
+            })
+          })
+          this.mapData = mapData
+        }
+      })
+    },
+    finishUpload() {
+      services.mapColumns(this.importedFileId, this.mapData).then(res => console.log(res))
+      this.$refs.upload.reset()
+      this.typeOptions = []
+      this.formFile = {
+        county: null,
+        type: null,
+        file: null,
+      }
+      this.importedFileId = null
+      this.columnsData = null
+      this.uploadMap = false
+      this.mapData = null
+      this.unknownColumns = []
+      this.missingColumns = []
+      this.missingColumnsAssing = []
+      this.missingKeyColumns = []
+      this.missingKeyColumnsAssing = []
+      this.trashColumns = []
+    },
+    discardFile() {
+      this.$swal({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-outline-danger ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          const mapData = {
+            leave_extra_columns: false,
+            abort: true,
+            columns: [],
+          }
+          this.mapData = mapData
+          this.finishUpload()
         }
       })
     },
@@ -436,5 +560,9 @@ td {
 }
 
 tr:hover {background-color: rgb(245, 245, 245);}
+
+.display-none {
+    display: none;
+  }
 
 </style>

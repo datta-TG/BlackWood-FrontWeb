@@ -29,4 +29,12 @@ export default {
       return Promise.reject()
     }
   },
+  async mapColumns(importedFileId, data) {
+    try {
+      const response = await axios.post(`/import/map_columns/${importedFileId}`, data)
+      return response.data
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
 }

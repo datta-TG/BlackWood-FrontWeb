@@ -22,18 +22,18 @@ $gray-800: #1e1e1e !default; // $gray-dark
 $gray-900: #2a2e30 !default;
 $black: #22292f !default; // 231f48 22292f
 
-$purple: #7367f0 !default; //$primary
+$blueBlackWood: #44a1c2 !default; //$primary
 $green: #28c76f !default; //$success
-$blue: #00cfe8 !default; //$info
-$orange: #ff9f43 !default; //$warning
+$blue: #44a1c2 !default; //$info
+$orange: #fb9233 !default; //$warning
 $red: #ea5455 !default; //$danger
 
-$primary: $purple !default;
+$primary: $blueBlackWood !default;
 $secondary: #82868b !default;
 $info: $blue !default;
 $warning: $orange !default;
 $light: $gray-50 !default;
-$dark: #4b4b4b !default;
+$dark: #3D3D3D !default;
 
 // Spacing
 //
