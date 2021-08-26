@@ -1,6 +1,17 @@
 <template>
   <div>
     <b-card>
+      <div v-if="uploading">
+        <b-button
+          v-ripple.400="'rgba(255, 255, 255, 0.15)'"
+          type="button"
+          variant="warning"
+          class="mr-1"
+          @click="discardFile"
+        >
+          Discard File
+        </b-button>
+      </div>
       <form-wizard
         ref="upload"
         color="#44A1C2"
@@ -74,15 +85,57 @@
             </b-row>
           </b-form>
         </tab-content>
-        <tab-content
-          title="View Data"
-        >
-          <xlsx-read
-            v-if="formFile.file"
-            :file="formFile.file"
-          >
-            <xlsx-table />
-          </xlsx-read>
+        <tab-content title="View Data">
+          <b-row class="mb-1">
+            <b-col cols="12">
+              <b-table
+                responsive
+                bordered
+                :items="itemsBase"
+                :fields="fieldsBase"
+                class="mb-2"
+              >
+                <template #cell(Phone)="data">
+                  <span class="text-nowrap">
+                    {{ data.value }}
+                  </span>
+                </template>
+
+                <!-- Optional default data cell scoped slot -->
+                <template #cell()="data">
+                  {{ data.value }}
+                </template>
+              </b-table>
+            </b-col>
+            <b-col cols="12">
+              <!-- pagination -->
+              <div class="d-flex justify-content-between flex-wrap">
+                <div class="d-flex align-items-center mb-0">
+                  <span class="text-nowrap ">
+                    Show
+                  </span>
+                  <b-form-select
+                    v-model="perPageBase"
+                    :options="['10','15','20']"
+                    class="mx-1"
+                    @input="viewBaseFile"
+                  />
+                  <span class="text-nowrap"> entries </span>
+                </div>
+                <div>
+                  <b-pagination
+                    v-model="currentPageBase"
+                    :total-rows="totalRowsBase"
+                    :per-page="perPageBase"
+                    align="right"
+                    size="md"
+                    class="my-0"
+                    @input="viewBaseFile"
+                  />
+                </div>
+              </div>
+            </b-col>
+          </b-row>
         </tab-content>
         <tab-content
           title="Map Columns"
@@ -90,7 +143,7 @@
         >
           <div v-if="uploadMap">
             <draggable
-              :group="{name: 'unknownColumns', put: true, pull: false}"
+              :group="{ name: 'unknownColumns', put: true, pull: false }"
               ghost-class="display-none"
               draggable=".draggable"
               class="my-8 mx-12 h-10"
@@ -115,7 +168,7 @@
                     <div class="d-flex">
                       <b-avatar
                         variant="info"
-                        :text="(index+1).toString()"
+                        :text="(index + 1).toString()"
                       />
                       <div class="ml-25">
                         <b-card-text class="mb-0 font-weight-bold">
@@ -128,24 +181,24 @@
               </b-col>
               <b-col md="6">
                 <h6 class="text-primary font-weight-bold mb-2">
-                  Trash
+                  keep
                 </h6>
                 <!-- draggable -->
                 <draggable
-                  :list="trashColumns"
+                  :list="keepColumns"
                   tag="ul"
                   group="unknownColumns"
                   class="list-group list-group-flush cursor-move"
                 >
                   <b-list-group-item
-                    v-for="(listItem, index) in trashColumns"
+                    v-for="(listItem, index) in keepColumns"
                     :key="index"
                     tag="li"
                   >
                     <div class="d-flex">
                       <b-avatar
                         variant="info"
-                        :text="(index+1).toString()"
+                        :text="(index + 1).toString()"
                       />
                       <div class="ml-25">
                         <b-card-text class="mb-0 font-weight-bold">
@@ -157,7 +210,10 @@
                 </draggable>
               </b-col>
             </b-row>
-            <b-row class="mb-2">
+            <b-row
+              v-if="!onlyVerifyUnknown"
+              class="mb-2"
+            >
               <b-col md="6">
                 <h6 class="text-primary font-weight-bold mb-2">
                   Missing Columns in File Type
@@ -178,7 +234,7 @@
                     <div class="d-flex">
                       <b-avatar
                         variant="danger"
-                        :text="(index+1).toString()"
+                        :text="(index + 1).toString()"
                       />
                       <div class="ml-25">
                         <b-card-text class="mb-0 font-weight-bold">
@@ -212,7 +268,7 @@
                     <div class="d-flex">
                       <b-avatar
                         variant="info"
-                        :text="(index+1).toString()"
+                        :text="(index + 1).toString()"
                       />
                       <div class="ml-25">
                         <b-card-text class="mb-0 font-weight-bold">
@@ -224,7 +280,10 @@
                 </draggable>
               </b-col>
             </b-row>
-            <b-row class="mb-2">
+            <b-row
+              v-if="!onlyVerifyUnknown"
+              class="mb-2"
+            >
               <b-col md="6">
                 <h6 class="text-primary font-weight-bold mb-2">
                   Missing Key Columns in File Type
@@ -245,7 +304,7 @@
                     <div class="d-flex">
                       <b-avatar
                         variant="warning"
-                        :text="(index+1).toString()"
+                        :text="(index + 1).toString()"
                       />
                       <div class="ml-25">
                         <b-card-text class="mb-0 font-weight-bold">
@@ -279,7 +338,7 @@
                     <div class="d-flex">
                       <b-avatar
                         variant="info"
-                        :text="(index+1).toString()"
+                        :text="(index + 1).toString()"
                       />
                       <div class="ml-25">
                         <b-card-text class="mb-0 font-weight-bold">
@@ -293,15 +352,6 @@
             </b-row>
             <!-- submit and reset -->
             <div>
-              <b-button
-                v-ripple.400="'rgba(255, 255, 255, 0.15)'"
-                type="button"
-                variant="warning"
-                class="mr-1"
-                @click="discardFile"
-              >
-                Discard File
-              </b-button>
               <b-button
                 v-ripple.400="'rgba(186, 191, 199, 0.15)'"
                 type="reset"
@@ -327,6 +377,60 @@
             </b-alert>
           </div>
         </tab-content>
+        <tab-content
+          title="Preview Data | Finish"
+        >
+          <b-row class="mb-1">
+            <b-col cols="12">
+              <b-table
+                responsive
+                bordered
+                :items="itemsBase"
+                :fields="fieldsBase"
+                class="mb-2"
+              >
+                <template #cell(Phone)="data">
+                  <span class="text-nowrap">
+                    {{ data.value }}
+                  </span>
+                </template>
+
+                <!-- Optional default data cell scoped slot -->
+                <template #cell()="data">
+                  {{ data.value }}
+                </template>
+              </b-table>
+            </b-col>
+            <b-col cols="12">
+              <!-- pagination -->
+              <div class="d-flex justify-content-between flex-wrap">
+                <div class="d-flex align-items-center mb-0">
+                  <span class="text-nowrap ">
+                    Show
+                  </span>
+                  <b-form-select
+                    v-model="perPageBase"
+                    :options="['10','15','20']"
+                    class="mx-1"
+                    @input="viewBaseFile"
+                  />
+                  <span class="text-nowrap"> entries </span>
+                </div>
+                <div>
+                  <b-pagination
+                    v-model="currentPageMapped"
+                    :total-rows="totalRowsMapped"
+                    :per-page="perPageMapped"
+                    align="right"
+                    size="md"
+                    class="my-0"
+                    @input="viewMappedFile"
+                  />
+                </div>
+              </div>
+            </b-col>
+          </b-row>
+        </tab-content>
       </form-wizard>
     </b-card>
   </div>
@@ -334,11 +438,22 @@
 
 <script>
 import {
-  BCard, BRow, BCol, BFormGroup, BForm, BButton, BFormFile, BListGroupItem, BAvatar, BCardText, BAlert,
+  BCard,
+  BRow,
+  BCol,
+  BFormGroup,
+  BForm,
+  BButton,
+  BFormFile,
+  BListGroupItem,
+  BAvatar,
+  BCardText,
+  BAlert,
+  BTable,
+  BPagination,
+  BFormSelect,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
-import XlsxRead from 'vue-xlsx/dist/components/XlsxRead'
-import XlsxTable from 'vue-xlsx/dist/components/XlsxTable'
 import Ripple from 'vue-ripple-directive'
 import draggable from 'vuedraggable'
 import { FormWizard, TabContent } from 'vue-form-wizard'
@@ -364,15 +479,17 @@ export default {
     draggable,
     FormWizard,
     TabContent,
-    XlsxRead,
-    XlsxTable,
     BAlert,
+    BTable,
+    BPagination,
+    BFormSelect,
   },
   directives: {
     Ripple,
   },
   data() {
     return {
+      uploading: false,
       countyOptions: [],
       typeOptions: [],
       formFile: {
@@ -381,15 +498,26 @@ export default {
         file: null,
       },
       importedFileId: null,
+      secretSecurityKey: null,
+      onlyVerifyUnknown: false,
       columnsData: null,
       uploadMap: false,
-      mapData: null,
+      perPageBase: 10,
+      totalRowsBase: 1,
+      currentPageBase: 1,
+      fieldsBase: [],
+      itemsBase: [],
       unknownColumns: [],
       missingColumns: [],
       missingColumnsAssing: [],
       missingKeyColumns: [],
       missingKeyColumnsAssing: [],
-      trashColumns: [],
+      keepColumns: [],
+      perPageMapped: 10,
+      totalRowsMapped: 1,
+      currentPageMapped: 1,
+      fieldsMapped: [],
+      itemsMapped: [],
     }
   },
   async mounted() {
@@ -415,18 +543,25 @@ export default {
         if (Boolean(this.formFile.file) && this.formFile.type) {
           const formData = new FormData()
           formData.append('file', this.formFile.file)
-          services.uploadFile(this.formFile.type, formData).then(res => {
-            if (res.status === 201) {
-              this.uploadMap = false
-            } else if (res.status === 206) {
-              this.uploadMap = true
-              const { data } = res
-              this.importedFileId = data.imported_file_id
-              this.columnsData = data
-              this.loadColumns()
-            }
-            resolve(true)
-          }).catch(err => console.log(err))
+          services
+            .uploadFile(this.formFile.type, formData)
+            .then(res => {
+              this.uploading = true
+              if (res.status === 201) {
+                this.uploadMap = false
+              } else if (res.status === 206) {
+                this.uploadMap = true
+                const { data } = res
+                this.secretSecurityKey = data.secret_security_key
+                this.onlyVerifyUnknown = data.only_verify_unknown
+                this.importedFileId = data.imported_file_id
+                this.columnsData = data
+                this.viewBaseFile()
+                this.loadColumns()
+              }
+              resolve(true)
+            })
+            .catch(err => console.log(err))
         } else {
           this.$toast({
             component: ToastificationContent,
@@ -438,6 +573,20 @@ export default {
             },
           })
           reject()
+        }
+      })
+    },
+    viewBaseFile() {
+      const pagination = {
+        base: true,
+        skip: this.currentPageBase,
+        limit: this.perPageBase,
+      }
+      services.viewFile(this.importedFileId, pagination).then(res => {
+        this.totalRowsBase = res.total_rows
+        if (res.data?.schema?.fields) {
+          this.fieldsBase = res.data.schema.fields.map(field => field.name)
+          this.itemsBase = res.data.data
         }
       })
     },
@@ -458,7 +607,10 @@ export default {
     },
     validationMap() {
       return new Promise((resolve, reject) => {
-        if (this.missingColumns.length !== this.missingColumnsAssing.length || this.missingKeyColumns.length !== this.missingKeyColumnsAssing.length) {
+        if (
+          this.missingColumns.length !== this.missingColumnsAssing.length
+          || this.missingKeyColumns.length !== this.missingKeyColumnsAssing.length
+        ) {
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -472,10 +624,15 @@ export default {
         } else {
           resolve(true)
           const mapData = {
-            leave_extra_columns: false,
-            abort: false,
+            secret_security_key: this.secretSecurityKey,
+            extra_columns: [],
             columns: [],
           }
+
+          this.keepColumns.forEach(element => {
+            mapData.extra_columns.push(element.text)
+          })
+
           this.missingColumns.forEach((element, index) => {
             mapData.columns.push({
               missing_column: element.text,
@@ -483,6 +640,7 @@ export default {
               map: this.missingColumnsAssing[index].map,
             })
           })
+
           this.missingKeyColumns.forEach((element, index) => {
             mapData.columns.push({
               missing_column: element.text,
@@ -490,31 +648,75 @@ export default {
               map: this.missingKeyColumnsAssing[index].map,
             })
           })
-          this.mapData = mapData
+          this.mapColumns(mapData)
+        }
+      })
+    },
+    mapColumns(mapData) {
+      if (this.uploadMap) {
+        services
+          .mapColumns(this.importedFileId, mapData)
+          .then(() => {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Completed',
+                icon: 'BellIcon',
+                text: 'Mapped Complete.',
+                variant: 'success',
+              },
+            })
+          })
+      }
+    },
+    viewMappedFile() {
+      const pagination = {
+        base: false,
+        skip: this.currentPageMapped,
+        limit: this.perPageMapped,
+      }
+      services.viewFile(this.importedFileId, pagination).then(res => {
+        this.totalRows = res.total_rows
+        if (res.data?.schema?.fields) {
+          this.fieldsBase = res.data.schema.fields.map(field => field.name)
+          this.itemsBase = res.data.data
         }
       })
     },
     finishUpload() {
-      if (this.uploadMap) {
-        services.mapColumns(this.importedFileId, this.mapData).then(res => console.log(res))
-      }
-      this.$refs.upload.reset()
-      this.typeOptions = []
-      this.formFile = {
-        county: null,
-        type: null,
-        file: null,
-      }
-      this.importedFileId = null
-      this.columnsData = null
-      this.uploadMap = false
-      this.mapData = null
-      this.unknownColumns = []
-      this.missingColumns = []
-      this.missingColumnsAssing = []
-      this.missingKeyColumns = []
-      this.missingKeyColumnsAssing = []
-      this.trashColumns = []
+      this.$swal({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, finish it!',
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-primary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          const data = {
+            secret_security_key: this.secretSecurityKey,
+          }
+          services
+            .commitUpload(this.importedFileId, data)
+            .then(() => {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Completado',
+                  icon: 'BellIcon',
+                  text: 'Upload Finished Successfully. ⭐️',
+                  variant: 'success',
+                },
+              })
+              this.$refs.upload.reset()
+              this.clearFormWizard()
+            })
+        }
+      })
     },
     discardFile() {
       this.$swal({
@@ -524,45 +726,54 @@ export default {
         showCancelButton: true,
         confirmButtonText: 'Yes, delete it!',
         customClass: {
-          confirmButton: 'btn btn-primary',
-          cancelButton: 'btn btn-outline-danger ml-1',
+          confirmButton: 'btn btn-danger',
+          cancelButton: 'btn btn-primary ml-1',
         },
         buttonsStyling: false,
       }).then(result => {
         if (result.value) {
-          const mapData = {
-            leave_extra_columns: false,
-            abort: true,
-            columns: [],
+          const data = {
+            secret_security_key: this.secretSecurityKey,
           }
-          this.mapData = mapData
-          this.finishUpload()
+          services
+            .abortUpload(this.importedFileId, data).then(() => this.clearFormWizard())
         }
       })
+    },
+    clearFormWizard() {
+      this.uploading = false
+      this.typeOptions = []
+      this.formFile = {
+        county: null,
+        type: null,
+        file: null,
+      }
+      this.importedFileId = null
+      this.secretSecurityKey = null
+      this.onlyVerifyUnknown = false
+      this.columnsData = null
+      this.uploadMap = false
+      this.perPageBase = 10
+      this.totalRowsBase = 1
+      this.currentPageBase = 1
+      this.fieldsBase = []
+      this.itemsBase = []
+      this.unknownColumns = []
+      this.missingColumns = []
+      this.missingColumnsAssing = []
+      this.missingKeyColumns = []
+      this.missingKeyColumnsAssing = []
+      this.keepColumns = []
+      this.perPageMapped = 10
+      this.totalRowsMapped = 1
+      this.currentPageMapped = 1
+      this.fieldsMapped = []
+      this.itemsMapped = []
     },
   },
 }
 </script>
 
 <style lang="scss">
-
-@import '@core/scss/vue/libs/vue-select.scss';
-
-table {
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-td {
-  border: 1px solid rgb(224, 224, 224);
-  padding: 15px;
-  text-align: left;
-}
-
-tr:hover {background-color: rgb(245, 245, 245);}
-
-.display-none {
-    display: none;
-  }
-
+@import "@core/scss/vue/libs/vue-select.scss";
 </style>

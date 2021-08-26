@@ -13,7 +13,7 @@ const router = new VueRouter({
     {
       path: '/',
       name: 'upload-file',
-      component: () => import('@/views/UploadFile.vue'),
+      component: () => import('@/views/import-tool/UploadFile.vue'),
       meta: {
         pageTitle: 'Upload File',
         breadcrumb: [
@@ -27,7 +27,7 @@ const router = new VueRouter({
     {
       path: '/imported-files',
       name: 'imported-files',
-      component: () => import('@/views/ImportedFiles.vue'),
+      component: () => import('@/views/import-tool/ImportedFiles.vue'),
       meta: {
         pageTitle: 'Imported Files',
         breadcrumb: [
@@ -36,6 +36,14 @@ const router = new VueRouter({
             active: true,
           },
         ],
+      },
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/Login.vue'),
+      meta: {
+        layout: 'full',
       },
     },
     {
