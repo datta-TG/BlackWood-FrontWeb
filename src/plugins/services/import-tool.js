@@ -19,7 +19,7 @@ export default {
   },
   async uploadFile(type, data) {
     try {
-      const response = await axios.post(`/upload_file/upload?file_schema_id=${type}&leave_extra_columns=false`, data, {
+      const response = await axios.post(`/upload_file/upload?file_schema_id=${type}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -31,7 +31,7 @@ export default {
   },
   async viewFile(id, pagination) {
     try {
-      const response = await axios.get(`/import/view_file/${id}`, pagination)
+      const response = await axios.post(`/import/view_file/${id}`, pagination)
       return response.data
     } catch (error) {
       return Promise.reject()
@@ -53,9 +53,9 @@ export default {
       return Promise.reject()
     }
   },
-  async abortUpload(importedFileId, data) {
+  async abortUpload(importedFileId, _data) {
     try {
-      const response = await axios.post(`/upload_file/abort_upload/${importedFileId}`, data)
+      const response = await axios.delete(`/upload_file/abort_upload/${importedFileId}`, { data: _data })
       return response.data
     } catch (error) {
       return Promise.reject()
