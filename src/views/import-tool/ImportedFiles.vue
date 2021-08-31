@@ -1,100 +1,154 @@
 <template>
-  <b-card>
-    <b-table
-      responsive
-      :items="items"
-      :fields="fields"
-      class="mb-0"
-    >
-      <template #cell(Phone)="data">
-        <span class="text-nowrap">
-          {{ data.value }}
-        </span>
-      </template>
+  <div>
+    <!-- Filters -->
+    <imported-files-filter
+      :file-type-filter.sync="fileTypeFilter"
+      :county-filter.sync="countyFilter"
+      :file-type-options="fileTypeOptions"
+      :county-options="countyOptions"
+    />
+    <b-card>
+      <b-table
+        responsive
+        :items="items"
+        :fields="fields"
+        class="mb-0"
+      >
+        <template #cell(complete)="data">
+          <b-badge
+            pill
+            :variant="data.value?'success':'warning'"
+          >
+            {{ data.value?'Complete':'Pending' }}
+          </b-badge>
+        </template>
 
-      <!-- Optional default data cell scoped slot -->
-      <template #cell()="data">
-        {{ data.value }}
-      </template>
-    </b-table>
-  </b-card>
+        <template #cell(upload_date)="data">
+          {{ data.value | formatDate }}
+        </template>
+
+        <!-- Optional default data cell scoped slot -->
+        <template #cell()="data">
+          {{ data.value }}
+        </template>
+      </b-table>
+      <b-row>
+        <b-col cols="12">
+          <!-- pagination -->
+          <div class="d-flex justify-content-between flex-wrap">
+            <div class="d-flex align-items-center mb-0">
+              <span class="text-nowrap ">
+                Show
+              </span>
+              <b-form-select
+                v-model="perPage"
+                :options="['10','15','20']"
+                class="mx-1"
+                @input="viewData"
+              />
+              <span class="text-nowrap"> entries </span>
+            </div>
+            <div>
+              <b-pagination
+                v-model="currentPage"
+                :total-rows="totalRows"
+                :per-page="perPage"
+                align="right"
+                size="md"
+                class="my-0"
+                @input="viewData"
+              />
+            </div>
+          </div>
+        </b-col>
+      </b-row>
+    </b-card>
+  </div>
 </template>
 
 <script>
-import { BCard, BTable } from 'bootstrap-vue'
+import {
+  BCard, BTable, BBadge, BRow, BCol, BPagination, BFormSelect,
+} from 'bootstrap-vue'
+import services from '@/plugins/services/import-tool'
+import ImportedFilesFilter from './ImportedFilesFilter.vue'
 
 export default {
   components: {
     BCard,
     BTable,
+    BBadge,
+    BRow,
+    BCol,
+    BPagination,
+    BFormSelect,
+    ImportedFilesFilter,
   },
   data() {
     return {
       fields: [
         'id',
-        'first_name',
-        'email',
-        'gender',
-        'ip_address',
+        'file_name',
         {
-          key: 'Phone', label: 'Phone',
+          key: 'county_name', label: 'County',
         },
-        'Country',
+        {
+          key: 'file_type_name', label: 'File Type',
+        },
+        'upload_date',
+        'complete',
       ],
       items: [
         {
-          id: '1',
-          first_name: 'Marybelle',
-          last_name: 'Della Scala',
-          email: 'mdellascala0@opensource.org',
-          gender: 'Female',
-          ip_address: '85.254.7.181',
-          Phone: '+86 350 673 7985',
-          Country: 'China',
-
-        },
-        {
-          id: '2',
-          first_name: 'Octavia',
-          last_name: 'Tohill',
-          email: 'otohill1@google.co.jp',
-          gender: 'Female',
-          ip_address: '93.70.144.212',
-          Phone: '+63 938 283 0018',
-          Country: 'Philippines',
-        },
-        {
-          id: '3',
-          first_name: 'Jennie',
-          last_name: 'Geroldi',
-          email: 'jgeroldi2@slideshare.net',
-          gender: 'Female',
-          ip_address: '76.145.147.212',
-          Phone: '+81 235 674 0110',
-          Country: 'Japan',
-        },
-        {
-          id: '4',
-          first_name: 'Vanya',
-          last_name: 'Wharby',
-          email: 'vwharby3@mozilla.org',
-          gender: 'Male',
-          ip_address: '139.234.247.155',
-          Phone: '+30 349 556 7375',
-          Country: 'Greece',
-        },
-        {
-          id: '5',
-          first_name: 'Olenka',
-          last_name: 'Brawley',
-          email: 'obrawleyc@adobe.com',
-          gender: 'Female',
-          ip_address: '166.183.163.155',
-          Phone: '+62 841 824 0990',
-          Country: 'Indonesia',
+          id: 1,
+          file_name: '2021_08_30_19_13_31-eviction_optimo.csv',
+          upload_date: '2021-08-30T19:13:31.993487',
+          complete: false,
+          county_name: 'miami',
+          file_type_name: 'eviction',
         },
       ],
+      perPage: 10,
+      totalRows: 1,
+      currentPage: 1,
+      fileTypeFilter: null,
+      countyFilter: null,
+      fileTypeOptions: [],
+      countyOptions: [],
     }
+  },
+  async mounted() {
+    await this.getCounties()
+  },
+  methods: {
+    getCounties() {
+      services.getCounties().then(res => {
+        this.countyOptions = res
+      })
+    },
+    getFileTypes() {
+      this.fileTypeFilter = null
+      if (this.countyFilter) {
+        services.getFileTypes(this.countyFilter).then(res => {
+          this.fileTypeOptions = res
+        })
+      } else {
+        this.fileTypeOptions = []
+        this.fileTypeFilter = null
+      }
+    },
+    viewData() {
+      const pagination = {
+        skip: this.currentPageMapped,
+        limit: this.perPageMapped,
+      }
+      services.viewImportedFiles(this.importedFileId, pagination).then(res => {
+        this.totalRows = res.total_rows
+        if (res.data) {
+          this.items = res.data
+        }
+      })
+    },
   },
 }
 </script>

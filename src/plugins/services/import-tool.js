@@ -61,4 +61,15 @@ export default {
       return Promise.reject()
     }
   },
+
+  // imported files
+
+  async viewImportedFiles(pagination) {
+    try {
+      const response = await axios.post('/view_file/get_files', pagination)
+      return response.data
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
 }

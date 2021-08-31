@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { ToastPlugin, ModalPlugin } from 'bootstrap-vue'
 import VueCompositionAPI from '@vue/composition-api'
-
+import moment from 'moment'
 // axios
 import axios from '@axios'
 
@@ -16,6 +16,13 @@ import './global-components'
 import '@/libs/portal-vue'
 import '@/libs/toastification'
 import '@/libs/sweet-alerts'
+
+Vue.filter('formatDate', value => {
+  if (value) {
+    return moment(String(value)).format('MM/DD/YYYY hh:mm:ss')
+  }
+  return null
+})
 
 // BSV Plugin Registration
 Vue.use(ToastPlugin)
