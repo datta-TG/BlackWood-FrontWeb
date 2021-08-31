@@ -17,6 +17,14 @@ export default {
       return Promise.reject()
     }
   },
+  async getAllFileTypes() {
+    try {
+      const response = await axios.get('/import/filetypes/')
+      return response.data
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
   async uploadFile(type, data) {
     try {
       const response = await axios.post(`/upload_file/upload?file_schema_id=${type}`, data, {
@@ -32,7 +40,7 @@ export default {
   async viewFile(id, pagination) {
     try {
       const response = await axios.post(`/import/view_file/${id}`, pagination)
-      return response.data
+      return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
     }
@@ -68,6 +76,22 @@ export default {
     try {
       const response = await axios.post('/view_file/get_files', pagination)
       return response.data
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+  async editRow(rowId, data) {
+    try {
+      const response = await axios.post(`/view_file/edit_row/${rowId}`, data)
+      return response
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+  async deleteRow(rowId, data) {
+    try {
+      const response = await axios.post(`/view_file/delete_tag_row/${rowId}`, data)
+      return response
     } catch (error) {
       return Promise.reject()
     }

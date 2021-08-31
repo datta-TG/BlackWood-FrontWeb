@@ -9,28 +9,32 @@
       <b-row>
         <b-col
           cols="12"
-          md="4"
+          md="6"
           class="mb-md-0 mb-2"
         >
           <label>County</label>
           <v-select
             :value="countyFilter"
+            label="name"
             :options="countyOptions"
             class="w-100"
+            multiple
             :reduce="val => val.id"
             @input="(val) => $emit('update:countyFilter', val)"
           />
         </b-col>
         <b-col
           cols="12"
-          md="4"
+          md="6"
           class="mb-md-0 mb-2"
         >
           <label>File Type</label>
           <v-select
             :value="fileTypeFilter"
+            label="name"
             :options="fileTypeOptions"
             class="w-100"
+            multiple
             :reduce="val => val.id"
             @input="(val) => $emit('update:fileTypeFilter', val)"
           />
@@ -57,11 +61,11 @@ export default {
   },
   props: {
     countyFilter: {
-      type: [Number, null],
+      type: [Array, null],
       default: null,
     },
     fileTypeFilter: {
-      type: [Number, null],
+      type: [Array, null],
       default: null,
     },
     countyOptions: {

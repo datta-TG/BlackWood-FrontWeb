@@ -2,8 +2,8 @@
   <div>
     <!-- Filters -->
     <imported-files-filter
-      :file-type-filter.sync="fileTypeFilter"
       :county-filter.sync="countyFilter"
+      :file-type-filter.sync="fileTypeFilter"
       :file-type-options="fileTypeOptions"
       :county-options="countyOptions"
     />
@@ -12,7 +12,7 @@
         responsive
         :items="items"
         :fields="fields"
-        class="mb-0"
+        class="mb-2"
       >
         <template #cell(complete)="data">
           <b-badge
@@ -25,6 +25,20 @@
 
         <template #cell(upload_date)="data">
           {{ data.value | formatDate }}
+        </template>
+
+        <!-- Column: Actions -->
+        <template #cell(actions)="data">
+          <div class="d-flex flex-row justify-content-center">
+            <b-button
+              variant="outline-primary"
+              class="btn-icon"
+              size="sm"
+              @click="viewFile(data.item)"
+            >
+              <span class="align-middle">View</span>
+            </b-button>
+          </div>
         </template>
 
         <!-- Optional default data cell scoped slot -->
@@ -68,7 +82,7 @@
 
 <script>
 import {
-  BCard, BTable, BBadge, BRow, BCol, BPagination, BFormSelect,
+  BCard, BTable, BBadge, BRow, BCol, BPagination, BFormSelect, BButton,
 } from 'bootstrap-vue'
 import services from '@/plugins/services/import-tool'
 import ImportedFilesFilter from './ImportedFilesFilter.vue'
@@ -82,6 +96,7 @@ export default {
     BCol,
     BPagination,
     BFormSelect,
+    BButton,
     ImportedFilesFilter,
   },
   data() {
@@ -97,6 +112,7 @@ export default {
         },
         'upload_date',
         'complete',
+        'actions',
       ],
       items: [
         {
@@ -117,8 +133,17 @@ export default {
       countyOptions: [],
     }
   },
+  watch: {
+    countyFilter() {
+      this.viewData()
+    },
+    fileTypeFilter() {
+      this.viewData()
+    },
+  },
   async mounted() {
     await this.getCounties()
+    await this.getFileTypes()
   },
   methods: {
     getCounties() {
@@ -127,18 +152,14 @@ export default {
       })
     },
     getFileTypes() {
-      this.fileTypeFilter = null
-      if (this.countyFilter) {
-        services.getFileTypes(this.countyFilter).then(res => {
-          this.fileTypeOptions = res
-        })
-      } else {
-        this.fileTypeOptions = []
-        this.fileTypeFilter = null
-      }
+      services.getAllFileTypes().then(res => {
+        this.fileTypeOptions = res
+      })
     },
     viewData() {
       const pagination = {
+        list_county_id: this.countyFilter,
+        list_file_type_id: this.fileTypeFilter,
         skip: this.currentPageMapped,
         limit: this.perPageMapped,
       }
@@ -148,6 +169,10 @@ export default {
           this.items = res.data
         }
       })
+    },
+    viewFile(file) {
+      localStorage.setItem('file', JSON.stringify(file))
+      this.$router.push({ name: 'imported-file', params: { id: file.id } })
     },
   },
 }

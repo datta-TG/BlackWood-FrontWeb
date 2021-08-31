@@ -39,6 +39,23 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/imported-file/:id',
+      name: 'imported-file',
+      component: () => import('@/views/import-tool/ImportedFileView.vue'),
+      meta: {
+        pageTitle: 'Imported Files',
+        breadcrumb: [
+          {
+            text: 'Imported Files',
+          },
+          {
+            text: 'Imported File',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),

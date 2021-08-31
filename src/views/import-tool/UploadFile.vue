@@ -95,12 +95,6 @@
                 :fields="fieldsBase"
                 class="mb-2"
               >
-                <template #cell(Phone)="data">
-                  <span class="text-nowrap">
-                    {{ data.value }}
-                  </span>
-                </template>
-
                 <!-- Optional default data cell scoped slot -->
                 <template #cell()="data">
                   {{ data.value }}
@@ -389,12 +383,6 @@
                 :fields="fieldsMapped"
                 class="mb-2"
               >
-                <template #cell(Phone)="data">
-                  <span class="text-nowrap">
-                    {{ data.value }}
-                  </span>
-                </template>
-
                 <!-- Optional default data cell scoped slot -->
                 <template #cell()="data">
                   {{ data.value }}
