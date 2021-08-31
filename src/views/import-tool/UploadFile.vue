@@ -657,6 +657,7 @@ export default {
         services
           .mapColumns(this.importedFileId, mapData)
           .then(() => {
+            this.viewMappedFile()
             this.$toast({
               component: ToastificationContent,
               props: {
