@@ -292,6 +292,15 @@ export default {
       services.editRow(router.currentRoute.params.id, data).then(() => {
         // eslint-disable-next-line no-param-reassign
         row.actions = false
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: 'Update Successfully',
+            icon: 'BellIcon',
+            variant: 'success',
+          },
+        })
       }).catch(() => {
         this.$toast({
           component: ToastificationContent,
@@ -330,6 +339,15 @@ export default {
       // fin borrar
 
       services.deleteRow(router.currentRoute.params.id, data).then(() => {
+        this.$toast({
+          component: ToastificationContent,
+          position: 'top-right',
+          props: {
+            title: 'Delete Successfully',
+            icon: 'BellIcon',
+            variant: 'success',
+          },
+        })
         if (deleteRow) {
           // eslint-disable-next-line no-param-reassign
           row.delete = true
