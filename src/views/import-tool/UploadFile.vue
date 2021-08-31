@@ -385,8 +385,8 @@
               <b-table
                 responsive
                 bordered
-                :items="itemsBase"
-                :fields="fieldsBase"
+                :items="itemsMapped"
+                :fields="fieldsMapped"
                 class="mb-2"
               >
                 <template #cell(Phone)="data">
@@ -409,10 +409,10 @@
                     Show
                   </span>
                   <b-form-select
-                    v-model="perPageBase"
+                    v-model="perPageMapped"
                     :options="['10','15','20']"
                     class="mx-1"
-                    @input="viewBaseFile"
+                    @input="viewMappedFile"
                   />
                   <span class="text-nowrap"> entries </span>
                 </div>
@@ -678,8 +678,8 @@ export default {
       services.viewFile(this.importedFileId, pagination).then(res => {
         this.totalRows = res.total_rows
         if (res.data?.schema?.fields) {
-          this.fieldsBase = res.data.schema.fields.map(field => field.name)
-          this.itemsBase = res.data.data
+          this.fieldsMapped = res.data.schema.fields.map(field => field.name)
+          this.itemsMapped = res.data.data
         }
       })
     },
