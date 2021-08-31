@@ -245,10 +245,9 @@ export default {
       }
       services.viewFile(router.currentRoute.params.id, pagination).then(res => {
         if (res.status === 200) {
-          this.totalRowsBase = res.total_rows
-          this.totalRowsBase = res.total_rows
-          if (res.data?.schema?.fields) {
-            this.fields = res.data.schema.fields.map(field => field.name)
+          this.totalRowsBase = res.data.total_rows
+          if (res.data?.data?.schema?.fields) {
+            this.fields = res.data.data.schema.fields.map(field => field.name)
             this.fields.push('actions')
             this.items = res.data.data.map(item => ({ ...item, actions: false, delete: false }))
           }

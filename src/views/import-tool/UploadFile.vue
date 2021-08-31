@@ -571,10 +571,12 @@ export default {
         limit: this.perPageBase,
       }
       services.viewFile(this.importedFileId, pagination).then(res => {
-        this.totalRowsBase = res.total_rows
-        if (res.data?.schema?.fields) {
-          this.fieldsBase = res.data.schema.fields.map(field => field.name)
-          this.itemsBase = res.data.data
+        if (res.status === 200) {
+          this.totalRowsBase = res.data.total_rows
+          if (res.data.data?.schema?.fields) {
+            this.fieldsBase = res.data.data.schema.fields.map(field => field.name)
+            this.itemsBase = res.data.data.data
+          }
         }
       })
     },
@@ -665,10 +667,12 @@ export default {
         limit: this.perPageMapped,
       }
       services.viewFile(this.importedFileId, pagination).then(res => {
-        this.totalRows = res.total_rows
-        if (res.data?.schema?.fields) {
-          this.fieldsMapped = res.data.schema.fields.map(field => field.name)
-          this.itemsMapped = res.data.data
+        if (res.status === 200) {
+          this.totalRows = res.data.total_rows
+          if (res.data?.data?.schema?.fields) {
+            this.fieldsMapped = res.data.data.schema.fields.map(field => field.name)
+            this.itemsMapped = res.data.data.data
+          }
         }
       })
     },
