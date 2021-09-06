@@ -114,21 +114,12 @@ export default {
         'complete',
         'actions',
       ],
-      items: [
-        {
-          id: 1,
-          file_name: '2021_08_30_19_13_31-eviction_optimo.csv',
-          upload_date: '2021-08-30T19:13:31.993487',
-          complete: false,
-          county_name: 'miami',
-          file_type_name: 'eviction',
-        },
-      ],
+      items: [],
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
-      fileTypeFilter: null,
-      countyFilter: null,
+      fileTypeFilter: [],
+      countyFilter: [],
       fileTypeOptions: [],
       countyOptions: [],
     }
@@ -144,6 +135,7 @@ export default {
   async mounted() {
     await this.getCounties()
     await this.getFileTypes()
+    await this.viewData()
   },
   methods: {
     getCounties() {
@@ -160,10 +152,10 @@ export default {
       const pagination = {
         list_county_id: this.countyFilter,
         list_file_type_id: this.fileTypeFilter,
-        skip: this.currentPageMapped,
-        limit: this.perPageMapped,
+        skip: this.currentPage - 1,
+        limit: this.perPage,
       }
-      services.viewImportedFiles(this.importedFileId, pagination).then(res => {
+      services.viewImportedFiles(pagination).then(res => {
         this.totalRows = res.total_rows
         if (res.data) {
           this.items = res.data

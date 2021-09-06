@@ -154,83 +154,6 @@ export default {
       fields: [],
       items: [],
       file: JSON.parse(localStorage.getItem('file')),
-      apiResponse: {
-        total_rows: 3,
-        data: {
-          schema: {
-            fields: [
-              {
-                name: 'row_id',
-                type: 'integer',
-              },
-              {
-                name: 'case number',
-                type: 'string',
-              },
-              {
-                name: 'folio',
-                type: 'string',
-              },
-              {
-                name: 'petitioner name',
-                type: 'string',
-              },
-              {
-                name: 'property owner',
-                type: 'string',
-              },
-              {
-                name: 'filing date',
-                type: 'string',
-              },
-              {
-                name: 'type',
-                type: 'string',
-              },
-              {
-                name: 'extra 3',
-                type: 'string',
-              },
-            ],
-            primaryKey: [
-              'row_id',
-            ],
-            pandas_version: '0.20.0',
-          },
-          data: [
-            {
-              row_id: 0,
-              'case number': 'EV-123123-3',
-              folio: '1',
-              'petitioner name': null,
-              'property owner': null,
-              'filing date': null,
-              type: null,
-              'extra 3': null,
-            },
-            {
-              row_id: 1,
-              'case number': 'EV-123441-2',
-              folio: '2',
-              'petitioner name': null,
-              'property owner': null,
-              'filing date': null,
-              type: null,
-              'extra 3': null,
-            },
-            {
-              row_id: 2,
-              'case number': 'EV-123223-1',
-              folio: '3',
-              'petitioner name': null,
-              'property owner': null,
-              'filing date': null,
-              type: null,
-              'extra 3': null,
-            },
-          ],
-        },
-      },
     }
   },
   async mounted() {
@@ -244,36 +167,25 @@ export default {
         limit: this.perPage,
       }
       services.viewFile(router.currentRoute.params.id, pagination).then(res => {
+        console.log(res)
         if (res.status === 200) {
           this.totalRowsBase = res.data.total_rows
           if (res.data?.data?.schema?.fields) {
             this.fields = res.data.data.schema.fields.map(field => field.name)
             this.fields.push('actions')
-            this.items = res.data.data.map(item => ({ ...item, actions: false, delete: false }))
+            // eslint-disable-next-line no-underscore-dangle
+            this.items = Object.values(res.data.data.data).filter(item => item.metadata.__deleted__ === 'False').map(item => ({ ...item, actions: false, delete: false }))
           }
         }
-      }).catch(() => {
-        this.$toast({
-          component: ToastificationContent,
-          position: 'top-right',
-          props: {
-            title: 'Error',
-            icon: 'BellIcon',
-            variant: 'danger',
-          },
-        })
       })
-
-      // pasar y borrar inicio
-      const res = this.apiResponse
-      this.totalRowsBase = res.total_rows
-      if (res.data?.schema?.fields) {
-        this.fields = res.data.schema.fields.map(field => field.name)
-        this.fields.push('actions')
-        this.items = res.data.data.map(item => ({ ...item, actions: false, delete: false }))
-      }
-
-      // pasar y borrar fin
+    },
+    removeEmpty(obj) {
+      return Object.fromEntries(
+        Object.entries(obj)
+          // eslint-disable-next-line no-unused-vars
+          .filter(([_, v]) => v != null)
+          .map(([k, v]) => [k, v === Object(v) ? this.removeEmpty(v) : v]),
+      )
     },
     editRow(rowId, row) {
       const dataRow = { ...row }
@@ -281,10 +193,11 @@ export default {
       delete dataRow.row_id
       delete dataRow.actions
       delete dataRow.delete
+      delete dataRow.metadata
 
       const data = {
         row_id: rowId,
-        data: dataRow,
+        data: this.removeEmpty(dataRow),
       }
       // eslint-disable-next-line no-param-reassign
       row.actions = false
