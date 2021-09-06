@@ -74,7 +74,6 @@ export default {
 
   async viewImportedFiles(pagination) {
     try {
-      console.log(pagination)
       const response = await axios.post('/view_file/get_files', pagination)
       return response.data
     } catch (error) {

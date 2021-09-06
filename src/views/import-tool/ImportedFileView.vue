@@ -167,7 +167,6 @@ export default {
         limit: this.perPage,
       }
       services.viewFile(router.currentRoute.params.id, pagination).then(res => {
-        console.log(res)
         if (res.status === 200) {
           this.totalRowsBase = res.data.total_rows
           if (res.data?.data?.schema?.fields) {
