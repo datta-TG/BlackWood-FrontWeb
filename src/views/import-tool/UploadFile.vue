@@ -549,7 +549,10 @@ export default {
               }
               resolve(true)
             })
-            .catch(err => console.log(err))
+            .catch(err => {
+              // eslint-disable-next-line no-console
+              console.log(err)
+            })
         } else {
           this.$toast({
             component: ToastificationContent,
