@@ -136,16 +136,7 @@ export default {
         'complete',
         'actions',
       ],
-      items: [
-        {
-          id: 1,
-          file_name: '2021_08_30_19_13_31-eviction_optimo.csv',
-          upload_date: '2021-08-30T19:13:31.993487',
-          complete: false,
-          county_name: 'miami',
-          file_type_name: 'eviction',
-        },
-      ],
+      items: [],
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
