@@ -203,11 +203,26 @@ export default {
         await Auth.signIn(this.userEmail, this.password).then(res => {
           localStorage.setItem('userData', JSON.stringify(res.attributes))
           localStorage.setItem('username', res.username)
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Welcome Back!',
+              icon: 'StarIcon',
+              variant: 'success',
+            },
+          })
           this.$router
             .replace('/')
         })
       } catch (error) {
-        console.log('error signing in', error)
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: error.message,
+            icon: 'DangerIcon',
+            variant: 'danger',
+          },
+        })
       }
     },
     validationForm() {
@@ -217,7 +232,7 @@ export default {
           this.$toast({
             component: ToastificationContent,
             props: {
-              title: 'Form Submitted',
+              title: 'Trying Login',
               icon: 'EditIcon',
               variant: 'success',
             },
