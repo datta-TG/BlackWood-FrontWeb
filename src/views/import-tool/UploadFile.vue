@@ -582,6 +582,10 @@ export default {
               this.uploading = true
               if (res.status === 201) {
                 this.uploadMap = false
+                const { data } = res
+                this.secretSecurityKey = data.secret_security_key
+                this.importedFileId = data.imported_file_id
+                this.viewBaseFile()
               } else if (res.status === 206) {
                 this.uploadMap = true
                 const { data } = res
@@ -594,11 +598,6 @@ export default {
                 ))
                 this.viewBaseFile()
                 this.loadColumns()
-              } else if (res.stauts === 200) {
-                const { data } = res
-                this.secretSecurityKey = data.secret_security_key
-                this.importedFileId = data.imported_file_id
-                this.viewBaseFile()
               }
               resolve(true)
             })
