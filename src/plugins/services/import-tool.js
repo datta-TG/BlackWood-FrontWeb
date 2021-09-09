@@ -107,7 +107,7 @@ export default {
   async sendFile(importedFileId) {
     try {
       const response = await axios.post(`/view_file/send_file/${importedFileId}`)
-      return response.data
+      return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
     }

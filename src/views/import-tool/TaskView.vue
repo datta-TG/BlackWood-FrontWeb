@@ -97,7 +97,7 @@
                 v-else
                 v-model="data.item[data.field.key]"
                 type="text"
-                class="form-control no-border w-full"
+                class="input-table form-control no-border w-full"
               >
             </div>
           </template>
@@ -189,7 +189,7 @@ export default {
           this.totalRowsBase = res.data.total_rows
           this.complete = res.data.complete
           if (res.data?.data?.schema?.fields) {
-            this.fields = res.data.data.schema.fields.map(field => field.name)
+            this.fields = res.data.data.schema.fields.map(field => field.name).filter(field => !['__deleted__', '__review__', '__blocked__'].includes(field))
             this.fields.push('actions')
             // eslint-disable-next-line no-underscore-dangle
             this.items = res.data.data.data.filter(item => item.metadata.__deleted__ === false).map(item => ({ ...item, actions: false, delete: false }))
@@ -307,5 +307,11 @@ export default {
 </script>
 
 <style>
+.input-table:focus{
+  min-width: 100px;
+}
 
+.input-table{
+  min-width: 70px;
+}
 </style>
