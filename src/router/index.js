@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import { Auth } from 'aws-amplify'
 
 Vue.use(VueRouter)
 
@@ -76,6 +77,24 @@ const router = new VueRouter({
       redirect: 'error-404',
     },
   ],
+})
+
+router.beforeEach((to, _, next) => {
+  Auth.currentAuthenticatedUser()
+    // eslint-disable-next-line consistent-return
+    .then(() => {
+      if (to.name === 'login') {
+        return next({ name: 'upload-file' })
+      }
+      next()
+    })
+    // eslint-disable-next-line consistent-return
+    .catch(() => {
+      if (to.name !== 'login') {
+        return next({ name: 'login' })
+      }
+      next()
+    })
 })
 
 // ? For splash screen

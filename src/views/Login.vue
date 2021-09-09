@@ -74,14 +74,8 @@
                 </validation-provider>
               </b-form-group>
 
-              <!-- forgot password -->
+              <!-- password -->
               <b-form-group>
-                <div class="d-flex justify-content-between">
-                  <label for="login-password">Password</label>
-                  <b-link :to="{name:'auth-forgot-password-v2'}">
-                    <small>Forgot Password?</small>
-                  </b-link>
-                </div>
                 <validation-provider
                   #default="{ errors }"
                   name="Password"
@@ -141,6 +135,8 @@ import { required, email } from '@validations'
 import { togglePasswordVisibility } from '@core/mixins/ui/forms'
 import store from '@/store/index'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import { Auth } from 'aws-amplify'
+import { AmplifyEventBus } from 'aws-amplify-vue'
 
 export default {
   components: {
@@ -163,13 +159,13 @@ export default {
   mixins: [togglePasswordVisibility],
   data() {
     return {
-      status: '',
       password: '',
       userEmail: '',
       sideImg: require('@/assets/images/pages/login-v2.svg'),
       // validation rulesimport store from '@/store/index'
       required,
       email,
+      signedIn: false,
     }
   },
   computed: {
@@ -185,10 +181,39 @@ export default {
       return this.sideImg
     },
   },
+  created() {
+    this.isUserSignedIn()
+
+    AmplifyEventBus.$on('authState', info => {
+      if (info === 'signedIn') {
+        this.isUserSignedIn()
+      } else {
+        this.signedIn = false
+      }
+    })
+  },
   methods: {
+    async isUserSignedIn() {
+      await Auth.currentAuthenticatedUser()
+        .then(() => { this.signedIn = true })
+        .catch(() => { this.signedIn = false })
+    },
+    async signIn() {
+      try {
+        await Auth.signIn(this.userEmail, this.password).then(res => {
+          localStorage.setItem('userData', JSON.stringify(res.attributes))
+          localStorage.setItem('username', res.username)
+          this.$router
+            .replace('/')
+        })
+      } catch (error) {
+        console.log('error signing in', error)
+      }
+    },
     validationForm() {
       this.$refs.loginValidation.validate().then(success => {
         if (success) {
+          this.signIn()
           this.$toast({
             component: ToastificationContent,
             props: {

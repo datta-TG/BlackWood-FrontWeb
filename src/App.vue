@@ -18,6 +18,7 @@ import { $themeColors, $themeBreakpoints, $themeConfig } from '@themeConfig'
 import { provideToast } from 'vue-toastification/composition'
 import { watch } from '@vue/composition-api'
 import useAppConfig from '@core/app-config/useAppConfig'
+import { components } from 'aws-amplify-vue'
 
 import { useWindowSize, useCssVar } from '@vueuse/core'
 
@@ -29,6 +30,7 @@ const LayoutFull = () => import('@/layouts/full/LayoutFull.vue')
 
 export default {
   components: {
+    components,
 
     // Layouts
     LayoutHorizontal,

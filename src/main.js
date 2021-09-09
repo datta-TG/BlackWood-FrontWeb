@@ -5,6 +5,10 @@ import moment from 'moment'
 // axios
 import axios from '@axios'
 
+import Amplify, * as AmplifyModules from 'aws-amplify'
+import { AmplifyPlugin } from 'aws-amplify-vue'
+import awsconfig from './aws-exports'
+
 import router from './router'
 import store from './store'
 import App from './App.vue'
@@ -16,6 +20,10 @@ import './global-components'
 import '@/libs/portal-vue'
 import '@/libs/toastification'
 import '@/libs/sweet-alerts'
+
+Amplify.configure(awsconfig)
+
+Vue.use(AmplifyPlugin, AmplifyModules)
 
 Vue.filter('formatDate', value => {
   if (value) {
