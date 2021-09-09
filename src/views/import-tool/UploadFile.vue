@@ -849,6 +849,7 @@ export default {
       this.fieldsMapped = []
       this.itemsMapped = []
       this.$refs.upload.reset()
+      localStorage.removeItem('uploadFile')
     },
   },
 }
