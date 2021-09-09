@@ -110,6 +110,7 @@ export default {
           this.$router.push({ name: 'login' })
         })
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.log('error signing out: ', error)
       }
     },
