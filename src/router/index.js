@@ -57,6 +57,23 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/task-view/:id',
+      name: 'task-view',
+      component: () => import('@/views/import-tool/TaskView.vue'),
+      meta: {
+        pageTitle: 'Imported Files',
+        breadcrumb: [
+          {
+            text: 'Imported Files',
+          },
+          {
+            text: 'Task View',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),

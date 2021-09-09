@@ -64,6 +64,7 @@ import {
 } from 'bootstrap-vue'
 import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue'
 import { Auth } from 'aws-amplify'
+import services from '@/plugins/services/import-tool'
 
 export default {
   components: {
@@ -90,6 +91,16 @@ export default {
   methods: {
     async  signOut() {
       try {
+        if (localStorage.getItem('uploadFile')) {
+          const file = JSON.parse(localStorage.getItem('uploadFile'))
+          const data = {
+            secret_security_key: file.secretSecurityKey,
+          }
+          services
+            .abortUpload(file.importedFileId, data).then(() => {
+              localStorage.removeItem('uploadFile')
+            })
+        }
         await Auth.signOut().then(() => {
         // Remove userData from localStorage
           localStorage.removeItem('userData')

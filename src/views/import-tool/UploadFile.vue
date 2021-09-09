@@ -94,6 +94,8 @@
                 :items="itemsBase"
                 :fields="fieldsBase"
                 class="mb-2"
+                show-empty
+                empty-text="No records found"
               >
                 <!-- Optional default data cell scoped slot -->
                 <template #cell()="data">
@@ -347,7 +349,6 @@
             <!-- submit and reset -->
             <div>
               <b-button
-                v-ripple.400="'rgba(186, 191, 199, 0.15)'"
                 type="reset"
                 variant="outline-secondary"
                 @click="loadColumns"
@@ -366,7 +367,7 @@
                 Success
               </h4>
               <div class="alert-body">
-                <span>File Uploades Successfully.</span>
+                <span>File Uploaded Successfully.</span>
               </div>
             </b-alert>
           </div>
@@ -382,6 +383,8 @@
                 :items="itemsMapped"
                 :fields="fieldsMapped"
                 class="mb-2"
+                show-empty
+                empty-text="No records found"
               >
                 <!-- Optional default data cell scoped slot -->
                 <template #cell()="data">
@@ -510,6 +513,52 @@ export default {
   },
   async mounted() {
     await this.getCounties()
+    if (localStorage.getItem('uploadFile')) {
+      const file = JSON.parse(localStorage.getItem('uploadFile'))
+      const data = {
+        secret_security_key: file.secretSecurityKey,
+      }
+      services
+        .abortUpload(file.importedFileId, data).then(() => {
+          localStorage.removeItem('uploadFile')
+          this.clearFormWizard()
+        })
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (localStorage.getItem('uploadFile') && to.name !== 'login') {
+      // borrar
+      next()
+      localStorage.removeItem('uploadFile')
+      // fin borrar
+      this.$swal({
+        title: 'Are you sure?',
+        text: 'If you leave the file will be deleted!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, leave it!',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-secondary ml-1',
+        },
+        buttonsStyling: false,
+      }).then(result => {
+        if (result.value) {
+          const data = {
+            secret_security_key: this.secretSecurityKey,
+          }
+          services
+            .abortUpload(this.importedFileId, data).then(() => {
+              next()
+              localStorage.removeItem('uploadFile')
+            })
+        } else {
+          next(false)
+        }
+      })
+    } else {
+      next()
+    }
   },
   methods: {
     getCounties() {
@@ -528,6 +577,24 @@ export default {
     },
     uploadFile() {
       return new Promise((resolve, reject) => {
+        // borrar
+        resolve(true)
+        this.uploadMap = true
+
+        const apiResponse = {
+          secret_security_key: '0uD9aQdaX1kwQlb1gRrUh3UBedu_w9eopH9QzhDDVrY', only_verify_unknown: false, imported_file_id: 4, missing_columns: ['petitioner name'], missing_key_columns: ['case number'], unknown_columns: ['extra 3', 'extra 2', 'extra 1'],
+        }
+
+        this.secretSecurityKey = apiResponse.secret_security_key
+        this.onlyVerifyUnknown = apiResponse.only_verify_unknown
+        this.importedFileId = apiResponse.imported_file_id
+        this.columnsData = apiResponse
+        localStorage.setItem('uploadFile', JSON.stringify(
+          { importedFileId: this.importedFileId, secretSecurityKey: this.secretSecurityKey },
+        ))
+        this.viewBaseFile()
+        this.loadColumns()
+        // fin borrar
         if (Boolean(this.formFile.file) && this.formFile.type) {
           const formData = new FormData()
           formData.append('file', this.formFile.file)
@@ -544,6 +611,9 @@ export default {
                 this.onlyVerifyUnknown = data.only_verify_unknown
                 this.importedFileId = data.imported_file_id
                 this.columnsData = data
+                localStorage.setItem('uploadFile', JSON.stringify(
+                  { importedFileId: this.importedFileId, secretSecurityKey: this.secretSecurityKey },
+                ))
                 this.viewBaseFile()
                 this.loadColumns()
               }
@@ -570,7 +640,7 @@ export default {
     viewBaseFile() {
       const pagination = {
         base: true,
-        skip: this.currentPageBase,
+        skip: this.currentPageBase - 1,
         limit: this.perPageBase,
       }
       services.viewFile(this.importedFileId, pagination).then(res => {
@@ -586,17 +656,20 @@ export default {
     loadColumns() {
       const { missing_columns, missing_key_columns, unknown_columns } = this.columnsData
       this.missingColumns = missing_columns.map(item => {
-        const column = { text: item, map: false }
+        const column = { text: item, map: false, missing: true }
         return column
       })
+      this.missingColumnsAssing = []
       this.missingKeyColumns = missing_key_columns.map(item => {
-        const column = { text: item, map: false }
+        const column = { text: item, map: false, key: true }
         return column
       })
+      this.missingKeyColumnsAssing = []
       this.unknownColumns = unknown_columns.map(item => {
-        const column = { text: item, map: true }
+        const column = { text: item, map: true, unknown: true }
         return column
       })
+      this.keepColumns = []
     },
     validationMap() {
       return new Promise((resolve, reject) => {
@@ -666,7 +739,7 @@ export default {
     viewMappedFile() {
       const pagination = {
         base: false,
-        skip: this.currentPageMapped,
+        skip: this.currentPageMapped - 1,
         limit: this.perPageMapped,
       }
       services.viewFile(this.importedFileId, pagination).then(res => {
@@ -772,4 +845,7 @@ export default {
 
 <style lang="scss">
 @import "@core/scss/vue/libs/vue-select.scss";
+.list-group {
+  height: 100%;
+}
 </style>

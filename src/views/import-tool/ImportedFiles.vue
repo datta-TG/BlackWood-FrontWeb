@@ -12,7 +12,10 @@
         responsive
         :items="items"
         :fields="fields"
+        bordered
         class="mb-2"
+        show-empty
+        empty-text="No records found"
       >
         <template #cell(complete)="data">
           <b-badge
@@ -30,6 +33,24 @@
         <!-- Column: Actions -->
         <template #cell(actions)="data">
           <div class="d-flex flex-row justify-content-center">
+            <b-button
+              v-if="data.item.complete"
+              variant="outline-success"
+              class="btn-icon mr-25"
+              size="sm"
+              @click="sendFile(data.item)"
+            >
+              <span class="align-middle">Send</span>
+            </b-button>
+            <b-button
+              v-else
+              variant="outline-secondary"
+              class="btn-icon mr-25"
+              size="sm"
+              @click="taskView(data.item)"
+            >
+              <span class="align-middle">Task View</span>
+            </b-button>
             <b-button
               variant="outline-primary"
               class="btn-icon"
@@ -85,6 +106,7 @@ import {
   BCard, BTable, BBadge, BRow, BCol, BPagination, BFormSelect, BButton,
 } from 'bootstrap-vue'
 import services from '@/plugins/services/import-tool'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import ImportedFilesFilter from './ImportedFilesFilter.vue'
 
 export default {
@@ -114,7 +136,16 @@ export default {
         'complete',
         'actions',
       ],
-      items: [],
+      items: [
+        {
+          id: 1,
+          file_name: '2021_08_30_19_13_31-eviction_optimo.csv',
+          upload_date: '2021-08-30T19:13:31.993487',
+          complete: false,
+          county_name: 'miami',
+          file_type_name: 'eviction',
+        },
+      ],
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
@@ -165,6 +196,26 @@ export default {
     viewFile(file) {
       localStorage.setItem('file', JSON.stringify(file))
       this.$router.push({ name: 'imported-file', params: { id: file.id } })
+    },
+    taskView(file) {
+      localStorage.setItem('file', JSON.stringify(file))
+      this.$router.push({ name: 'task-view', params: { id: file.id } })
+    },
+    sendFile(file) {
+      services.sendFile(file.id).then(res => {
+        if (res.status === 200) {
+          this.$toast({
+            component: ToastificationContent,
+            position: 'top-right',
+            props: {
+              title: 'File Send Successfully',
+              icon: 'BellIcon',
+              variant: 'success',
+            },
+          })
+          this.$router.push({ name: 'imported-files' })
+        }
+      })
     },
   },
 }

@@ -45,7 +45,7 @@
           :fields="fields"
           class="mb-2"
           show-empty
-          empty-text="No records found"
+          empty-text="Task View Complete"
         >
 
           <!-- Column: Actions -->
@@ -114,7 +114,7 @@
               v-model="perPage"
               :options="['10','15','20']"
               class="mx-1"
-              @input="viewFile"
+              @input="taskView"
             />
             <span class="text-nowrap"> entries </span>
           </div>
@@ -126,9 +126,24 @@
               align="right"
               size="md"
               class="my-0"
-              @input="viewFile"
+              @input="taskView"
             />
           </div>
+        </div>
+      </b-col>
+      <b-col
+        v-if="complete"
+        cols="12"
+        class="mt-2"
+      >
+        <div>
+          <b-button
+            type="reset"
+            variant="outline-success"
+            @click="sendFile"
+          >
+            Send File
+          </b-button>
         </div>
       </b-col>
     </b-row>
@@ -153,10 +168,12 @@ export default {
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
+      complete: false,
       fields: [],
       items: [],
       apiResponse: {
         total_rows: 3,
+        complete: true,
         data: {
           schema: {
             fields: [
@@ -236,18 +253,19 @@ export default {
     }
   },
   async mounted() {
-    await this.viewFile()
+    await this.taskView()
   },
   methods: {
-    viewFile() {
+    taskView() {
       const pagination = {
         base: false,
-        skip: this.currentPage,
+        skip: this.currentPage - 1,
         limit: this.perPage,
       }
-      services.viewFile(router.currentRoute.params.id, pagination).then(res => {
+      services.taskView(router.currentRoute.params.id, pagination).then(res => {
         if (res.status === 200) {
           this.totalRowsBase = res.data.total_rows
+          this.complete = res.data.complete
           if (res.data?.data?.schema?.fields) {
             this.fields = res.data.data.schema.fields.map(field => field.name)
             this.fields.push('actions')
@@ -259,6 +277,7 @@ export default {
       // pasar y borrar inicio
       const res = this.apiResponse
       this.totalRowsBase = res.total_rows
+      this.complete = res.complete
       if (res.data?.schema?.fields) {
         this.fields = res.data.schema.fields.map(field => field.name)
         this.fields.push('actions')
@@ -287,11 +306,14 @@ export default {
         row_id: rowId,
         data: this.removeEmpty(dataRow),
       }
+      // borrar
       // eslint-disable-next-line no-param-reassign
       row.actions = false
+      // fin borrar
       services.editRow(router.currentRoute.params.id, data).then(() => {
         // eslint-disable-next-line no-param-reassign
-        row.actions = false
+        this.taskView()
+
         this.$toast({
           component: ToastificationContent,
           position: 'top-right',
@@ -331,7 +353,7 @@ export default {
         row.delete = true
         setTimeout(() => {
           if (row.delete) {
-            this.viewFile()
+            this.taskView()
           }
         }, 2000)
       }
@@ -353,7 +375,7 @@ export default {
           row.delete = true
           setTimeout(() => {
             if (row.delete) {
-              this.viewFile()
+              this.taskView()
             }
           }, 2000)
         }
@@ -367,6 +389,22 @@ export default {
             variant: 'danger',
           },
         })
+      })
+    },
+    sendFile() {
+      services.sendFile(router.currentRoute.params.id).then(res => {
+        if (res.status === 200) {
+          this.$toast({
+            component: ToastificationContent,
+            position: 'top-right',
+            props: {
+              title: 'File Send Successfully',
+              icon: 'BellIcon',
+              variant: 'success',
+            },
+          })
+          this.$router.push({ name: 'imported-files' })
+        }
       })
     },
   },
