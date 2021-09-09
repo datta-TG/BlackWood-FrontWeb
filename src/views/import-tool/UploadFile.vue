@@ -5,6 +5,7 @@
         v-if="loading"
         label="Loading..."
         class="mb-1 loading"
+        variant="primary"
       />
       <div v-if="uploading">
         <b-button
