@@ -44,7 +44,7 @@ const router = new VueRouter({
       name: 'imported-file',
       component: () => import('@/views/import-tool/ImportedFileView.vue'),
       meta: {
-        pageTitle: 'Imported Files',
+        pageTitle: 'Imported File',
         breadcrumb: [
           {
             text: 'Imported Files',
@@ -61,7 +61,7 @@ const router = new VueRouter({
       name: 'task-view',
       component: () => import('@/views/import-tool/TaskView.vue'),
       meta: {
-        pageTitle: 'Imported Files',
+        pageTitle: 'Task View',
         breadcrumb: [
           {
             text: 'Imported Files',

@@ -98,7 +98,7 @@ export default {
   },
   async taskView(id, pagination) {
     try {
-      const response = await axios.post(`/import/task_view/${id}`, pagination)
+      const response = await axios.post(`/view_file/task_view/${id}`, pagination)
       return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
@@ -106,7 +106,7 @@ export default {
   },
   async sendFile(importedFileId) {
     try {
-      const response = await axios.post(`/import/send_file/${importedFileId}`)
+      const response = await axios.post(`/view_file/send_file/${importedFileId}`)
       return response.data
     } catch (error) {
       return Promise.reject()
