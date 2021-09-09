@@ -1,6 +1,12 @@
 <template>
   <div>
-    <b-card>
+    <b-card class="relative">
+      <b-spinner
+        v-if="loading"
+        label="Loading..."
+        class="mb-1 loading"
+        variant="primary"
+      />
       <div v-if="uploading">
         <b-button
           v-ripple.400="'rgba(255, 255, 255, 0.15)'"
@@ -87,6 +93,7 @@
         </tab-content>
         <tab-content title="View Data">
           <b-row class="mb-1">
+
             <b-col cols="12">
               <b-table
                 responsive
@@ -443,6 +450,7 @@ import {
   BTable,
   BPagination,
   BFormSelect,
+  BSpinner,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
@@ -474,6 +482,7 @@ export default {
     BTable,
     BPagination,
     BFormSelect,
+    BSpinner,
   },
   directives: {
     Ripple,
@@ -488,6 +497,7 @@ export default {
         type: null,
         file: null,
       },
+      loading: false,
       importedFileId: null,
       secretSecurityKey: null,
       onlyVerifyUnknown: false,
@@ -574,11 +584,13 @@ export default {
     uploadFile() {
       return new Promise((resolve, reject) => {
         if (Boolean(this.formFile.file) && this.formFile.type) {
+          this.loading = true
           const formData = new FormData()
           formData.append('file', this.formFile.file)
           services
             .uploadFile(this.formFile.type, formData)
             .then(res => {
+              this.loading = false
               this.uploading = true
               if (res.status === 201) {
                 this.uploadMap = false
@@ -620,12 +632,14 @@ export default {
       })
     },
     viewBaseFile() {
+      this.loading = true
       const pagination = {
         base: true,
         skip: this.currentPageBase - 1,
         limit: this.perPageBase,
       }
       services.viewFile(this.importedFileId, pagination).then(res => {
+        this.loading = false
         if (res.status === 200) {
           this.totalRowsBase = res.data.total_rows
           if (res.data.data?.schema?.fields) {
@@ -701,10 +715,12 @@ export default {
       })
     },
     mapColumns(mapData) {
+      this.loading = true
       if (this.uploadMap) {
         services
           .mapColumns(this.importedFileId, mapData)
           .then(() => {
+            this.loading = false
             this.viewMappedFile()
             this.$toast({
               component: ToastificationContent,
@@ -719,12 +735,14 @@ export default {
       }
     },
     viewMappedFile() {
+      this.loading = true
       const pagination = {
         base: false,
         skip: this.currentPageMapped - 1,
         limit: this.perPageMapped,
       }
       services.viewFile(this.importedFileId, pagination).then(res => {
+        this.loading = false
         if (res.status === 200) {
           this.totalRows = res.data.total_rows
           if (res.data?.data?.schema?.fields) {
@@ -747,6 +765,7 @@ export default {
         },
         buttonsStyling: false,
       }).then(result => {
+        this.loading = true
         if (result.value) {
           const data = {
             secret_security_key: this.secretSecurityKey,
@@ -754,6 +773,7 @@ export default {
           services
             .commitUpload(this.importedFileId, data)
             .then(() => {
+              this.loading = false
               this.$toast({
                 component: ToastificationContent,
                 props: {
@@ -829,5 +849,11 @@ export default {
 @import "@core/scss/vue/libs/vue-select.scss";
 .list-group {
   height: 100%;
+}
+
+.loading {
+  position: absolute;
+  top: 1em;
+  left: 1em;
 }
 </style>
