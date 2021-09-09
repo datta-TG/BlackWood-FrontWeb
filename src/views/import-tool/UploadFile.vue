@@ -613,9 +613,8 @@ export default {
               }
               resolve(true)
             })
-            .catch(err => {
-              // eslint-disable-next-line no-console
-              console.log(err)
+            .catch(() => {
+              this.loading = false
             })
         } else {
           this.$toast({
@@ -647,6 +646,8 @@ export default {
             this.itemsBase = res.data.data.data
           }
         }
+      }).catch(() => {
+        this.loading = false
       })
     },
     loadColumns() {
@@ -731,6 +732,8 @@ export default {
                 variant: 'success',
               },
             })
+          }).catch(() => {
+            this.loading = false
           })
       }
     },
@@ -750,6 +753,8 @@ export default {
             this.itemsMapped = res.data.data.data
           }
         }
+      }).catch(() => {
+        this.loading = false
       })
     },
     finishUpload() {
@@ -785,6 +790,8 @@ export default {
               })
               this.$refs.upload.reset()
               this.clearFormWizard()
+            }).catch(() => {
+              this.loading = false
             })
         }
       })
@@ -853,7 +860,7 @@ export default {
 
 .loading {
   position: absolute;
-  top: 1em;
+  bottom: 1em;
   left: 1em;
 }
 </style>
