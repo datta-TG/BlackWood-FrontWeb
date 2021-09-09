@@ -213,7 +213,7 @@ export default {
               variant: 'success',
             },
           })
-          this.$router.push({ name: 'imported-files' })
+          this.viewData()
         }
       })
     },
