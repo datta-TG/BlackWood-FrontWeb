@@ -193,6 +193,8 @@ export default {
             this.fields.push('actions')
             // eslint-disable-next-line no-underscore-dangle
             this.items = res.data.data.data.filter(item => item.metadata.__deleted__ === false).map(item => ({ ...item, actions: false, delete: false }))
+          } else {
+            this.items = []
           }
         }
       })
