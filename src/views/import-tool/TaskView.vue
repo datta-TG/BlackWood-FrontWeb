@@ -171,84 +171,6 @@ export default {
       complete: false,
       fields: [],
       items: [],
-      apiResponse: {
-        total_rows: 3,
-        complete: true,
-        data: {
-          schema: {
-            fields: [
-              {
-                name: 'row_id',
-                type: 'integer',
-              },
-              {
-                name: 'case number',
-                type: 'string',
-              },
-              {
-                name: 'folio',
-                type: 'string',
-              },
-              {
-                name: 'petitioner name',
-                type: 'string',
-              },
-              {
-                name: 'property owner',
-                type: 'string',
-              },
-              {
-                name: 'filing date',
-                type: 'string',
-              },
-              {
-                name: 'type',
-                type: 'string',
-              },
-              {
-                name: 'extra 3',
-                type: 'string',
-              },
-            ],
-            primaryKey: [
-              'row_id',
-            ],
-            pandas_version: '0.20.0',
-          },
-          data: [
-            {
-              row_id: 0,
-              'case number': 'EV-123123-3',
-              folio: '1',
-              'petitioner name': null,
-              'property owner': null,
-              'filing date': null,
-              type: null,
-              'extra 3': null,
-            },
-            {
-              row_id: 1,
-              'case number': 'EV-123441-2',
-              folio: '2',
-              'petitioner name': null,
-              'property owner': null,
-              'filing date': null,
-              type: null,
-              'extra 3': null,
-            },
-            {
-              row_id: 2,
-              'case number': 'EV-123223-1',
-              folio: '3',
-              'petitioner name': null,
-              'property owner': null,
-              'filing date': null,
-              type: null,
-              'extra 3': null,
-            },
-          ],
-        },
-      },
       file: JSON.parse(localStorage.getItem('file')),
     }
   },
@@ -274,17 +196,6 @@ export default {
           }
         }
       })
-      // pasar y borrar inicio
-      const res = this.apiResponse
-      this.totalRowsBase = res.total_rows
-      this.complete = res.complete
-      if (res.data?.schema?.fields) {
-        this.fields = res.data.schema.fields.map(field => field.name)
-        this.fields.push('actions')
-        this.items = res.data.data.map(item => ({ ...item, actions: false, delete: false }))
-      }
-
-      // pasar y borrar fin
     },
     removeEmpty(obj) {
       return Object.fromEntries(
@@ -306,10 +217,6 @@ export default {
         row_id: rowId,
         data: this.removeEmpty(dataRow),
       }
-      // borrar
-      // eslint-disable-next-line no-param-reassign
-      row.actions = false
-      // fin borrar
       services.editRow(router.currentRoute.params.id, data).then(() => {
         // eslint-disable-next-line no-param-reassign
         this.taskView()
@@ -345,20 +252,6 @@ export default {
         // eslint-disable-next-line no-param-reassign
         row.delete = false
       }
-
-      // borrar
-
-      if (deleteRow) {
-        // eslint-disable-next-line no-param-reassign
-        row.delete = true
-        setTimeout(() => {
-          if (row.delete) {
-            this.taskView()
-          }
-        }, 2000)
-      }
-
-      // fin borrar
 
       services.deleteRow(router.currentRoute.params.id, data).then(() => {
         this.$toast({

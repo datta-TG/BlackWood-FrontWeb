@@ -527,10 +527,6 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     if (localStorage.getItem('uploadFile') && to.name !== 'login') {
-      // borrar
-      next()
-      localStorage.removeItem('uploadFile')
-      // fin borrar
       this.$swal({
         title: 'Are you sure?',
         text: 'If you leave the file will be deleted!',
@@ -577,24 +573,6 @@ export default {
     },
     uploadFile() {
       return new Promise((resolve, reject) => {
-        // borrar
-        resolve(true)
-        this.uploadMap = true
-
-        const apiResponse = {
-          secret_security_key: '0uD9aQdaX1kwQlb1gRrUh3UBedu_w9eopH9QzhDDVrY', only_verify_unknown: false, imported_file_id: 4, missing_columns: ['petitioner name'], missing_key_columns: ['case number'], unknown_columns: ['extra 3', 'extra 2', 'extra 1'],
-        }
-
-        this.secretSecurityKey = apiResponse.secret_security_key
-        this.onlyVerifyUnknown = apiResponse.only_verify_unknown
-        this.importedFileId = apiResponse.imported_file_id
-        this.columnsData = apiResponse
-        localStorage.setItem('uploadFile', JSON.stringify(
-          { importedFileId: this.importedFileId, secretSecurityKey: this.secretSecurityKey },
-        ))
-        this.viewBaseFile()
-        this.loadColumns()
-        // fin borrar
         if (Boolean(this.formFile.file) && this.formFile.type) {
           const formData = new FormData()
           formData.append('file', this.formFile.file)
