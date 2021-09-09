@@ -788,7 +788,6 @@ export default {
                   variant: 'success',
                 },
               })
-              this.$refs.upload.reset()
               this.clearFormWizard()
             }).catch(() => {
               this.loading = false
@@ -847,6 +846,7 @@ export default {
       this.currentPageMapped = 1
       this.fieldsMapped = []
       this.itemsMapped = []
+      this.$refs.upload.reset()
     },
   },
 }
@@ -861,6 +861,5 @@ export default {
 .loading {
   position: absolute;
   top: 1em;
-  right: 1em;
 }
 </style>
