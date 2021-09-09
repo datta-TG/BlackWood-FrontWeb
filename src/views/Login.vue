@@ -47,6 +47,10 @@
             Please sign-in to your account
           </b-card-text>
 
+          <!-- AWS UI
+          <amplify-authenticator />
+          -->
+
           <!-- form -->
           <validation-observer ref="loginValidation">
             <b-form
