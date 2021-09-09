@@ -860,7 +860,7 @@ export default {
 
 .loading {
   position: absolute;
-  bottom: 1em;
-  left: 1em;
+  top: 1em;
+  right: 1em;
 }
 </style>
