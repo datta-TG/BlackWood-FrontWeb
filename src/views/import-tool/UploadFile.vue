@@ -740,7 +740,7 @@ export default {
     viewMappedFile() {
       this.loading = true
       const pagination = {
-        base: false,
+        base: !this.uploadMap,
         skip: this.currentPageMapped - 1,
         limit: this.perPageMapped,
       }
