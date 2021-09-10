@@ -165,7 +165,7 @@ export default {
     viewFile() {
       const pagination = {
         base: false,
-        skip: this.currentPage,
+        skip: this.currentPage - 1,
         limit: this.perPage,
       }
       services.viewFile(router.currentRoute.params.id, pagination).then(res => {
