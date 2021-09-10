@@ -186,7 +186,7 @@ export default {
       }
       services.taskView(router.currentRoute.params.id, pagination).then(res => {
         if (res.status === 200) {
-          this.totalRowsBase = res.data.total_rows
+          this.totalRows = res.data.total_rows
           this.complete = res.data.complete
           if (res.data?.data?.schema?.fields) {
             this.fields = res.data.data.schema.fields.map(field => field.name).filter(field => !['__deleted__', '__review__', '__blocked__'].includes(field))

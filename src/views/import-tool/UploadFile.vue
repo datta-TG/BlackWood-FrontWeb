@@ -747,7 +747,7 @@ export default {
       services.viewFile(this.importedFileId, pagination).then(res => {
         this.loading = false
         if (res.status === 200) {
-          this.totalRows = res.data.total_rows
+          this.totalRowsMapped = res.data.total_rows
           if (res.data?.data?.schema?.fields) {
             this.fieldsMapped = res.data.data.schema.fields.map(field => field.name)
             this.itemsMapped = res.data.data.data
