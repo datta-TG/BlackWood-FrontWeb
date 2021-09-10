@@ -3,7 +3,7 @@ import axios from '@axios'
 export default {
   async getCounties() {
     try {
-      const response = await axios.get('/import/counties/')
+      const response = await axios.get('/import/counties')
       return response.data
     } catch (error) {
       return Promise.reject()
@@ -19,7 +19,7 @@ export default {
   },
   async getAllFileTypes() {
     try {
-      const response = await axios.get('/import/filetypes/')
+      const response = await axios.get('/import/filetypes')
       return response.data
     } catch (error) {
       return Promise.reject()
