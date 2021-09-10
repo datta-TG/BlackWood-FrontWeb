@@ -6,8 +6,8 @@ import axios from 'axios'
 const axiosIns = axios.create({
   // You can add your headers here
   // ================================
-  // baseURL: process.env.API_URL,
-  baseURL: 'https://api.data.blackwoodcre.com/api/',
+  baseURL: process.env.VUE_APP_API_URL,
+  // baseURL: 'https://api.data.blackwoodcre.com/api/',
   // timeout: 1000,
   // headers: {'X-Custom-Header': 'foobar'}
 })
