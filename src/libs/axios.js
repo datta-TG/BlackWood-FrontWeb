@@ -7,7 +7,7 @@ const axiosIns = axios.create({
   // You can add your headers here
   // ================================
   // baseURL: process.env.API_URL,
-  baseURL: 'https://net-lb-e593a20-842810448.us-east-1.elb.amazonaws.com/api/',
+  baseURL: 'https://api.data.blackwoodcre.com/api/',
   // timeout: 1000,
   // headers: {'X-Custom-Header': 'foobar'}
 })
