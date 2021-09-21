@@ -255,6 +255,7 @@ export default {
       }
       services.reviewFile(router.currentRoute.params.id, data).then(res => {
         if (res.status === 200) {
+          this.taskView()
           this.$toast({
             component: ToastificationContent,
             position: 'top-right',
@@ -274,6 +275,7 @@ export default {
       }
       services.noRealStateFile(router.currentRoute.params.id, data).then(res => {
         if (res.status === 200) {
+          this.taskView()
           this.$toast({
             component: ToastificationContent,
             position: 'top-right',
