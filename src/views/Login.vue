@@ -47,7 +47,7 @@
             Please sign-in to your account
           </b-card-text>
 
-          <!-- AWS UI
+          <!-- login
           <amplify-authenticator />
           -->
 

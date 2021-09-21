@@ -52,15 +52,6 @@
           <template #cell(actions)="data">
             <div class="d-flex flex-row justify-content-center">
               <b-button
-                v-if="!data.item.actions"
-                variant="outline-warning"
-                class="btn-icon"
-                size="sm"
-                @click="data.item.actions = true"
-              >
-                <span class="align-middle">Edit</span>
-              </b-button>
-              <b-button
                 v-if="data.item.actions"
                 variant="outline-info"
                 class="btn-icon"
@@ -70,16 +61,7 @@
                 <span class="align-middle">Save</span>
               </b-button>
               <b-button
-                v-if="!data.item.delete"
-                variant="outline-danger"
-                class="btn-icon ml-25"
-                size="sm"
-                @click="deleteRow(data.item.row_id,data.item)"
-              >
-                <span class="align-middle">Delete</span>
-              </b-button>
-              <b-button
-                v-else
+                v-if="data.item.delete"
                 variant="outline-info"
                 class="btn-icon ml-25"
                 size="sm"
@@ -87,6 +69,60 @@
               >
                 <span class="align-middle">Undo</span>
               </b-button>
+              <b-dropdown
+                variant="link"
+                toggle-class="text-decoration-none"
+                no-caret
+              >
+                <template v-slot:button-content>
+                  <feather-icon
+                    icon="MoreVerticalIcon"
+                    size="16"
+                    class="text-body align-middle mr-25"
+                  />
+                </template>
+                <b-dropdown-item
+                  v-if="!data.item.actions"
+                  @click="data.item.actions = true"
+                >
+                  <feather-icon
+                    icon="Edit2Icon"
+                    class="mr-50"
+                  />
+                  <span>Edit</span>
+                </b-dropdown-item>
+                <b-dropdown-item
+                  v-if="!data.item.delete"
+                  @click="deleteRow(data.item.row_id,data.item)"
+                >
+                  <feather-icon
+                    icon="TrashIcon"
+                    class="mr-50"
+                  />
+                  <span>Delete</span>
+                </b-dropdown-item>
+                <b-dropdown-item @click="reviewFile(data.item.row_id)">
+                  <feather-icon
+                    icon="EyeIcon"
+                    class="mr-50"
+                  />
+                  <span>Review</span>
+                </b-dropdown-item>
+                <b-dropdown-item @click="noRealStateFile(data.item.row_id)">
+                  <feather-icon
+                    icon="FileIcon"
+                    class="mr-50"
+                  />
+                  <span>No Real State</span>
+                </b-dropdown-item>
+                <b-dropdown-item @click="addFolioFile(data.item.row_id)">
+                  <feather-icon
+                    icon="PlusIcon"
+                    class="mr-50"
+                  />
+                  <span>Add Folio</span>
+                </b-dropdown-item>
+              </b-dropdown>
             </div>
           </template>
           <!-- Optional default data cell scoped slot -->
@@ -152,7 +188,7 @@
 
 <script>
 import {
-  BCard, BTable, BRow, BCol, BPagination, BAlert, BFormSelect, BLink, BCardText, BButton,
+  BCard, BTable, BRow, BCol, BPagination, BAlert, BFormSelect, BLink, BCardText, BButton, BDropdown, BDropdownItem,
 } from 'bootstrap-vue'
 import router from '@/router'
 import services from '@/plugins/services/import-tool'
@@ -160,7 +196,7 @@ import ToastificationContent from '@core/components/toastification/Toastificatio
 
 export default {
   components: {
-    BCard, BTable, BRow, BCol, BPagination, BAlert, BFormSelect, BLink, BCardText, BButton,
+    BCard, BTable, BRow, BCol, BPagination, BAlert, BFormSelect, BLink, BCardText, BButton, BDropdown, BDropdownItem,
 
   },
   data() {
@@ -178,6 +214,78 @@ export default {
     await this.taskView()
   },
   methods: {
+    addFolioFile(rowId) {
+      this.$swal({
+        title: 'Type Folio',
+        text: 'Please type the new folio to link to the Case Number',
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off',
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Add',
+        customClass: {
+          confirmButton: 'btn btn-primary',
+          cancelButton: 'btn btn-secondary ml-1',
+          input: 'mt-2 mb-2',
+        },
+        showLoaderOnConfirm: true,
+        preConfirm: folio => services.addFolioFile(rowId, folio)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(response.statusText)
+            }
+            return response.json()
+          })
+          .catch(error => {
+            this.$swal.showValidationMessage(
+              `Request failed: ${error}`,
+            )
+          }),
+        allowOutsideClick: () => !this.$swal.isLoading(),
+      }).then(result => {
+        // eslint-disable-next-line no-console
+        console.log(result)
+      })
+    },
+    reviewFile(rowId) {
+      const data = {
+        row_id: rowId,
+        value: true,
+      }
+      services.reviewFile(router.currentRoute.params.id, data).then(res => {
+        if (res.status === 200) {
+          this.$toast({
+            component: ToastificationContent,
+            position: 'top-right',
+            props: {
+              title: 'Review Successfully',
+              icon: 'BellIcon',
+              variant: 'success',
+            },
+          })
+        }
+      })
+    },
+    noRealStateFile(rowId) {
+      const data = {
+        row_id: rowId,
+        value: true,
+      }
+      services.noRealStateFile(router.currentRoute.params.id, data).then(res => {
+        if (res.status === 200) {
+          this.$toast({
+            component: ToastificationContent,
+            position: 'top-right',
+            props: {
+              title: 'No Real State Successfully',
+              icon: 'BellIcon',
+              variant: 'success',
+            },
+          })
+        }
+      })
+    },
     taskView() {
       const pagination = {
         base: false,

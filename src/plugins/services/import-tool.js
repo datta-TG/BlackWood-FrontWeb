@@ -17,6 +17,14 @@ export default {
       return Promise.reject()
     }
   },
+  async getTags() {
+    try {
+      const response = await axios.get('view_file/get_tags')
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
   async getAllFileTypes() {
     try {
       const response = await axios.get('/import/filetypes')
@@ -88,10 +96,34 @@ export default {
       return Promise.reject()
     }
   },
-  async deleteRow(rowId, data) {
+  async deleteRow(fileId, data) {
     try {
-      const response = await axios.post(`/view_file/delete_tag_row/${rowId}`, data)
+      const response = await axios.post(`/view_file/delete_tag_row/${fileId}`, data)
       return response
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+  async addFolioFile(fileId, data) {
+    try {
+      const response = await axios.post(`/view_file/add_folio_row/${fileId}`, data)
+      return response
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+  async reviewFile(fileId, data) {
+    try {
+      const response = await axios.post(`/view_file/review_row/${fileId}`, data)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+  async noRealStateFile(fileId, data) {
+    try {
+      const response = await axios.post(`/view_file/no_real_state_row/${fileId}`, data)
+      return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
     }
