@@ -219,7 +219,7 @@ export default {
       services.getTags().then(res => {
         if (res.status === 200) {
           this.tagsOptions = res.data.tags.map(tag => ({
-            name: tag.replace('_', ' '), value: tag,
+            name: tag.replaceAll('_', ' '), value: tag,
           }))
         }
       })
