@@ -114,7 +114,7 @@ export default {
   },
   async reviewFile(fileId, data) {
     try {
-      const response = await axios.post(`/view_file/review_row/${fileId}`, data)
+      const response = await axios.post(`/view_file/review_tag_row/${fileId}`, data)
       return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
@@ -122,7 +122,7 @@ export default {
   },
   async noRealStateFile(fileId, data) {
     try {
-      const response = await axios.post(`/view_file/no_real_state_row/${fileId}`, data)
+      const response = await axios.post(`/view_file/no_real_state_tag_row/${fileId}`, data)
       return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()

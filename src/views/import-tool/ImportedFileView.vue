@@ -309,10 +309,10 @@ export default {
         if (res.status === 200) {
           this.totalRows = res.data.total_rows
           if (res.data?.data?.schema?.fields) {
-            this.fields = res.data.data.schema.fields.map(field => field.name).filter(field => !['__deleted__', '__review__', '__blocked__'].includes(field))
+            this.fields = res.data.data.schema.fields.map(field => field.name).filter(field => !['__deleted__', '__no_real_state__', '__review__', '__blocked__'].includes(field))
             this.fields.push('actions')
             // eslint-disable-next-line no-underscore-dangle
-            this.items = res.data.data.data.filter(item => item.metadata.__deleted__ === false).map(item => ({ ...item, actions: false, delete: false }))
+            this.items = res.data.data.data.map(item => ({ ...item, actions: false, delete: false }))
           }
         }
       })
