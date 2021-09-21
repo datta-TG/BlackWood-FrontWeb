@@ -301,7 +301,7 @@ export default {
         base: false,
         skip: this.currentPage - 1,
         limit: this.perPage,
-        flags: this.tagsFilter,
+        tags: this.tagsFilter,
       }
       services.viewFile(router.currentRoute.params.id, pagination).then(res => {
         if (res.status === 200) {
