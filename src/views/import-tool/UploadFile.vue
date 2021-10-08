@@ -145,224 +145,69 @@
           :before-change="validationMap"
         >
           <div v-if="uploadMap">
-            <draggable
-              :group="{ name: 'unknownColumns', put: true, pull: false }"
-              ghost-class="display-none"
-              draggable=".draggable"
-              class="my-8 mx-12 h-10"
-            />
-            <b-row class="mb-2">
-              <b-col md="6">
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Uknown Columns in File
-                </h6>
-                <!-- draggable -->
-                <draggable
-                  :list="unknownColumns"
-                  tag="ul"
-                  :group="{ name: 'unknownColumns', put: false }"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in unknownColumns"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="info"
-                        :text="(index + 1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-              <b-col md="6">
-                <h6 class="text-primary font-weight-bold mb-2">
-                  keep
-                </h6>
-                <!-- draggable -->
-                <draggable
-                  :list="keepColumns"
-                  tag="ul"
-                  group="unknownColumns"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in keepColumns"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="info"
-                        :text="(index + 1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-            </b-row>
-            <b-row
-              v-if="!onlyVerifyUnknown"
-              class="mb-2"
+            <b-tabs
+              pills
+              align="left"
             >
-              <b-col md="6">
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Missing Columns in File Type
-                </h6>
-
-                <!-- draggable -->
-                <draggable
-                  :list="missingColumns"
-                  tag="ul"
-                  :group="{ name: 'unknownColumns', pull: 'clone', put: false }"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in missingColumns"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="danger"
-                        :text="(index + 1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-              <b-col
-                md="6"
-                class="mt-sm-2 mt-md-0"
+              <b-tab
+                title="Fields Mapping"
+                active
               >
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Assing Missing Columns
-                </h6>
-
-                <!-- draggable -->
-                <draggable
-                  :list="missingColumnsAssing"
-                  tag="ul"
-                  group="unknownColumns"
-                  class="list-group list-group-flush cursor-move"
+                <b-table
+                  responsive
+                  :items="itemsMap"
+                  :fields="fieldsMap"
+                  class="mb-0"
                 >
-                  <b-list-group-item
-                    v-for="(listItem, index) in missingColumnsAssing"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="info"
-                        :text="(index + 1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-            </b-row>
-            <b-row
-              v-if="!onlyVerifyUnknown"
-              class="mb-2"
-            >
-              <b-col md="6">
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Missing Key Columns in File Type
-                </h6>
+                  <template #cell(file_schema_column)="data">
+                    <v-select
+                      v-model="data.item.file_schema_column"
+                      placeholder="Select Field To Import"
+                      label="name"
+                      :options="fileSchemaColumns"
+                      :selectable="(option) => !option.selected"
+                      @option:deselected="deselectFileSchemaColumn"
+                      @option:selected="selectFileSchemaColumn"
+                    >
+                      <template v-slot:option="option">
+                        {{ option.name }}
+                        <span
+                          v-if="option.required"
+                          class="text-danger"
+                        >
+                          *
+                        </span>
+                      </template>
+                    </v-select>
+                  </template>
 
-                <!-- draggable -->
-                <draggable
-                  :list="missingKeyColumns"
-                  tag="ul"
-                  :group="{ name: 'unknownColumns', pull: 'clone', put: false }"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in missingKeyColumns"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="warning"
-                        :text="(index + 1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-              <b-col
-                md="6"
-                class="mt-sm-2 mt-md-0"
-              >
-                <h6 class="text-primary font-weight-bold mb-2">
-                  Assing Missing Key Columns
-                </h6>
+                  <template #cell(default_value)="data">
+                    <input
+                      v-model="data.item.default_value"
+                      type="text"
+                      placeholder="Replace Empty Values"
+                      class="input-table form-control no-border w-full"
+                    >
+                  </template>
 
-                <!-- draggable -->
-                <draggable
-                  :list="missingKeyColumnsAssing"
-                  tag="ul"
-                  group="unknownColumns"
-                  class="list-group list-group-flush cursor-move"
-                >
-                  <b-list-group-item
-                    v-for="(listItem, index) in missingKeyColumnsAssing"
-                    :key="index"
-                    tag="li"
-                  >
-                    <div class="d-flex">
-                      <b-avatar
-                        variant="info"
-                        :text="(index + 1).toString()"
-                      />
-                      <div class="ml-25">
-                        <b-card-text class="mb-0 font-weight-bold">
-                          {{ listItem.text }}
-                        </b-card-text>
-                      </div>
-                    </div>
-                  </b-list-group-item>
-                </draggable>
-              </b-col>
-            </b-row>
-            <!-- submit and reset -->
-            <div>
-              <b-button
-                type="reset"
-                variant="outline-secondary"
-                @click="loadColumns"
-              >
-                Reload Columns
-              </b-button>
-            </div>
+                  <template #cell(type)="data">
+                    <span class="text-nowrap">
+                      {{ data.item.file_schema_column?data.item.file_schema_column.type:'' }}
+                    </span>
+                  </template>
+
+                  <!-- Optional default data cell scoped slot -->
+                  <template #cell()="data">
+                    {{ data.value }}
+                  </template>
+                </b-table>
+              </b-tab>
+              <b-tab title="Assign Default Value">
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae reprehenderit, accusamus voluptate, aperiam rerum unde ipsam numquam odit nemo sapiente ex voluptatem commodi. Eos distinctio eius vitae qui autem quasi!
+                </p>
+              </b-tab>
+            </b-tabs>
           </div>
           <div v-else>
             <!-- success -->
@@ -443,18 +288,16 @@ import {
   BForm,
   BButton,
   BFormFile,
-  BListGroupItem,
-  BAvatar,
-  BCardText,
   BAlert,
   BTable,
   BPagination,
   BFormSelect,
   BSpinner,
+  BTabs,
+  BTab,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
-import draggable from 'vuedraggable'
 import { FormWizard, TabContent } from 'vue-form-wizard'
 import 'prismjs'
 import 'prismjs/themes/prism-tomorrow.css'
@@ -466,16 +309,12 @@ export default {
   components: {
     BCard,
     BRow,
-    BCardText,
     BCol,
     BFormGroup,
     BForm,
     BButton,
     BFormFile,
     vSelect,
-    BListGroupItem,
-    BAvatar,
-    draggable,
     FormWizard,
     TabContent,
     BAlert,
@@ -483,6 +322,8 @@ export default {
     BPagination,
     BFormSelect,
     BSpinner,
+    BTabs,
+    BTab,
   },
   directives: {
     Ripple,
@@ -499,8 +340,6 @@ export default {
       },
       loading: false,
       importedFileId: null,
-      secretSecurityKey: null,
-      onlyVerifyUnknown: false,
       columnsData: null,
       uploadMap: false,
       perPageBase: 10,
@@ -508,12 +347,22 @@ export default {
       currentPageBase: 1,
       fieldsBase: [],
       itemsBase: [],
-      unknownColumns: [],
-      missingColumns: [],
-      missingColumnsAssing: [],
-      missingKeyColumns: [],
-      missingKeyColumnsAssing: [],
-      keepColumns: [],
+      fieldsMap: [
+        {
+          key: 'file_column_name', label: 'Fields in File',
+        },
+        {
+          key: 'file_schema_column', label: 'Fields in Database',
+        },
+        {
+          key: 'default_value', label: 'Default Value',
+        },
+        {
+          key: 'type', label: 'Type',
+        },
+      ],
+      itemsMap: [],
+      fileSchemaColumns: [],
       perPageMapped: 10,
       totalRowsMapped: 1,
       currentPageMapped: 1,
@@ -525,11 +374,8 @@ export default {
     await this.getCounties()
     if (localStorage.getItem('uploadFile')) {
       const file = JSON.parse(localStorage.getItem('uploadFile'))
-      const data = {
-        secret_security_key: file.secretSecurityKey,
-      }
       services
-        .abortUpload(file.importedFileId, data).then(() => {
+        .abortUpload(file.importedFileId).then(() => {
           localStorage.removeItem('uploadFile')
           this.clearFormWizard()
         })
@@ -550,11 +396,8 @@ export default {
         buttonsStyling: false,
       }).then(result => {
         if (result.value) {
-          const data = {
-            secret_security_key: this.secretSecurityKey,
-          }
           services
-            .abortUpload(this.importedFileId, data).then(() => {
+            .abortUpload(this.importedFileId).then(() => {
               next()
               localStorage.removeItem('uploadFile')
             })
@@ -567,6 +410,12 @@ export default {
     }
   },
   methods: {
+    selectFileSchemaColumn(e) {
+      e.selected = true
+    },
+    deselectFileSchemaColumn(e) {
+      e.selected = false
+    },
     getCounties() {
       services.getCounties().then(res => {
         this.countyOptions = res
@@ -583,6 +432,105 @@ export default {
     },
     uploadFile() {
       return new Promise((resolve, reject) => {
+        // borrar
+        const response = {
+          mapping_data: {
+            file_columns_names: [
+              'Database ID',
+              'Case Number',
+              'Formatted Case Number',
+              'Filing Date',
+              'Case Type',
+              'Property Owner',
+              'Parcel Number',
+              'Folio',
+              'Property Address',
+              'Property City',
+              'Property State',
+              'Property Zip',
+              'Petitioner',
+            ],
+            file_schema_columns: [
+              {
+                id: 1,
+                name: 'case number',
+                type: 'string',
+                required: true,
+                auto_complete: false,
+                relationship_verification: false,
+              },
+              {
+                id: 2,
+                name: 'eviction id',
+                type: 'string',
+                required: false,
+                auto_complete: false,
+                relationship_verification: false,
+              },
+              {
+                id: 3,
+                name: 'folio',
+                type: 'string',
+                required: false,
+                auto_complete: true,
+                relationship_verification: true,
+              },
+              {
+                id: 4,
+                name: 'date filed',
+                type: 'date',
+                required: false,
+                auto_complete: false,
+                relationship_verification: false,
+              },
+              {
+                id: 5,
+                name: 'type',
+                type: 'string',
+                required: false,
+                auto_complete: false,
+                relationship_verification: false,
+              },
+              {
+                id: 6,
+                name: 'fips',
+                type: 'string',
+                required: false,
+                auto_complete: false,
+                relationship_verification: false,
+              },
+            ],
+            match_columns: {
+              'Case Number': {
+                id: 1,
+                name: 'case number',
+                type: 'string',
+                required: true,
+                auto_complete: false,
+                relationship_verification: false,
+              },
+              Folio: {
+                id: 3,
+                name: 'folio',
+                type: 'string',
+                required: false,
+                auto_complete: true,
+                relationship_verification: true,
+              },
+            },
+          },
+          imported_file_id: 2,
+          message: 'success',
+        }
+        this.importedFileId = response.imported_file_id
+        this.columnsData = response
+        localStorage.setItem('uploadFile', JSON.stringify(
+          { importedFileId: this.importedFileId },
+        ))
+        this.loadColumns()
+        resolve(true)
+        this.uploadMap = true
+        // fin borrar
         if (Boolean(this.formFile.file) && this.formFile.type) {
           this.loading = true
           const formData = new FormData()
@@ -593,23 +541,25 @@ export default {
               this.loading = false
               this.uploading = true
               if (res.status === 201) {
-                this.uploadMap = false
-                const { data } = res
-                this.secretSecurityKey = data.secret_security_key
-                this.importedFileId = data.imported_file_id
-                this.viewBaseFile()
-              } else if (res.status === 206) {
                 this.uploadMap = true
                 const { data } = res
-                this.secretSecurityKey = data.secret_security_key
-                this.onlyVerifyUnknown = data.only_verify_unknown
                 this.importedFileId = data.imported_file_id
                 this.columnsData = data
                 localStorage.setItem('uploadFile', JSON.stringify(
-                  { importedFileId: this.importedFileId, secretSecurityKey: this.secretSecurityKey },
+                  { importedFileId: this.importedFileId },
                 ))
                 this.viewBaseFile()
                 this.loadColumns()
+              } else if (res.status === 400) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Error',
+                    icon: 'BellIcon',
+                    text: 'Something was wrong. ❌',
+                    variant: 'danger',
+                  },
+                })
               }
               resolve(true)
             })
@@ -651,68 +601,13 @@ export default {
       })
     },
     loadColumns() {
-      const { missing_columns, missing_key_columns, unknown_columns } = this.columnsData
-      this.missingColumns = missing_columns.map(item => {
-        const column = { text: item, map: false, missing: true }
-        return column
-      })
-      this.missingColumnsAssing = []
-      this.missingKeyColumns = missing_key_columns.map(item => {
-        const column = { text: item, map: false, key: true }
-        return column
-      })
-      this.missingKeyColumnsAssing = []
-      this.unknownColumns = unknown_columns.map(item => {
-        const column = { text: item, map: true, unknown: true }
-        return column
-      })
-      this.keepColumns = []
+      this.itemsMap = this.columnsData.mapping_data.file_columns_names.map(element => ({ file_column_name: element, file_schema_column: null, default_value: null }))
+      this.fileSchemaColumns = this.columnsData.mapping_data.file_schema_columns.map(obj => ({ ...obj, selected: false }))
     },
     validationMap() {
       return new Promise((resolve, reject) => {
-        if (
-          this.missingColumns.length !== this.missingColumnsAssing.length
-          || this.missingKeyColumns.length !== this.missingKeyColumnsAssing.length
-        ) {
-          this.$toast({
-            component: ToastificationContent,
-            props: {
-              title: 'Warning',
-              icon: 'BellIcon',
-              text: 'Please complete the missing columns 🙏🏼.',
-              variant: 'warning',
-            },
-          })
-          reject()
-        } else {
-          resolve(true)
-          const mapData = {
-            secret_security_key: this.secretSecurityKey,
-            extra_columns: [],
-            columns: [],
-          }
-
-          this.keepColumns.forEach(element => {
-            mapData.extra_columns.push(element.text)
-          })
-
-          this.missingColumns.forEach((element, index) => {
-            mapData.columns.push({
-              missing_column: element.text,
-              unknown_column: this.missingColumnsAssing[index].text,
-              map: this.missingColumnsAssing[index].map,
-            })
-          })
-
-          this.missingKeyColumns.forEach((element, index) => {
-            mapData.columns.push({
-              missing_column: element.text,
-              unknown_column: this.missingKeyColumnsAssing[index].text,
-              map: this.missingKeyColumnsAssing[index].map,
-            })
-          })
-          this.mapColumns(mapData)
-        }
+        resolve(true)
+        reject()
       })
     },
     mapColumns(mapData) {
@@ -772,11 +667,8 @@ export default {
       }).then(result => {
         this.loading = true
         if (result.value) {
-          const data = {
-            secret_security_key: this.secretSecurityKey,
-          }
           services
-            .commitUpload(this.importedFileId, data)
+            .commitUpload(this.importedFileId)
             .then(() => {
               this.loading = false
               this.$toast({
@@ -811,11 +703,8 @@ export default {
         buttonsStyling: false,
       }).then(result => {
         if (result.value) {
-          const data = {
-            secret_security_key: this.secretSecurityKey,
-          }
           services
-            .abortUpload(this.importedFileId, data).then(() => this.clearFormWizard())
+            .abortUpload(this.importedFileId).then(() => this.clearFormWizard())
         }
       })
     },
@@ -828,8 +717,6 @@ export default {
         file: null,
       }
       this.importedFileId = null
-      this.secretSecurityKey = null
-      this.onlyVerifyUnknown = false
       this.columnsData = null
       this.uploadMap = false
       this.perPageBase = 10

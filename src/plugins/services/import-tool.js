@@ -61,17 +61,17 @@ export default {
       return Promise.reject()
     }
   },
-  async commitUpload(importedFileId, data) {
+  async commitUpload(importedFileId) {
     try {
-      const response = await axios.post(`/upload_file/commit_upload/${importedFileId}`, data)
+      const response = await axios.post(`/upload_file/commit_upload/${importedFileId}`)
       return response.data
     } catch (error) {
       return Promise.reject()
     }
   },
-  async abortUpload(importedFileId, _data) {
+  async abortUpload(importedFileId) {
     try {
-      const response = await axios.delete(`/upload_file/abort_upload/${importedFileId}`, { data: _data })
+      const response = await axios.delete(`/upload_file/abort_upload/${importedFileId}`)
       return response.data
     } catch (error) {
       return Promise.reject()
