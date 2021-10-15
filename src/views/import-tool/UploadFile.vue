@@ -583,9 +583,8 @@ export default {
             },
           )
         })
-        this.mapColumns(mapData)
         resolve(true)
-        reject()
+        this.mapColumns(mapData)
       })
     },
     mapColumns(mapData) {
