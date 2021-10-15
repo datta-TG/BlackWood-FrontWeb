@@ -154,7 +154,6 @@
                 active
               >
                 <b-table
-                  responsive
                   :items="itemsMap"
                   :fields="fieldsMap"
                   class="mb-0"
@@ -166,8 +165,7 @@
                       label="name"
                       :options="fileSchemaColumns"
                       :selectable="(option) => !option.selected"
-                      @option:deselected="deselectFileSchemaColumn"
-                      @option:selected="selectFileSchemaColumn"
+                      @input="reviewFileSchemaColumn"
                     >
                       <template v-slot:option="option">
                         {{ option.name }}
@@ -203,9 +201,10 @@
                 </b-table>
               </b-tab>
               <b-tab title="Assign Default Value">
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae reprehenderit, accusamus voluptate, aperiam rerum unde ipsam numquam odit nemo sapiente ex voluptatem commodi. Eos distinctio eius vitae qui autem quasi!
-                </p>
+                <default-values
+                  :file-schema-columns.sync="fileSchemaColumns"
+                  :schema-extra-columns.sync="schemaExtraColumns"
+                />
               </b-tab>
             </b-tabs>
           </div>
@@ -304,6 +303,7 @@ import 'prismjs/themes/prism-tomorrow.css'
 import services from '@/plugins/services/import-tool'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import DefaultValues from './upload/DefaultValues.vue'
 
 export default {
   components: {
@@ -324,6 +324,7 @@ export default {
     BSpinner,
     BTabs,
     BTab,
+    DefaultValues,
   },
   directives: {
     Ripple,
@@ -360,9 +361,16 @@ export default {
         {
           key: 'type', label: 'Type',
         },
+        {
+          key: 'first_sample', label: 'First Sample',
+        },
+        {
+          key: 'second_sample', label: 'Second Sample',
+        },
       ],
       itemsMap: [],
       fileSchemaColumns: [],
+      schemaExtraColumns: [],
       perPageMapped: 10,
       totalRowsMapped: 1,
       currentPageMapped: 1,
@@ -410,11 +418,17 @@ export default {
     }
   },
   methods: {
-    selectFileSchemaColumn(e) {
-      e.selected = true
-    },
-    deselectFileSchemaColumn(e) {
-      e.selected = false
+    reviewFileSchemaColumn() {
+      const fileSchemaColumns = []
+      this.itemsMap.forEach(element => {
+        if (element.file_schema_column) {
+          fileSchemaColumns.push(element.file_schema_column.id)
+        }
+      })
+      this.fileSchemaColumns.forEach(element => {
+        // eslint-disable-next-line no-param-reassign
+        element.selected = fileSchemaColumns.includes(element.id)
+      })
     },
     getCounties() {
       services.getCounties().then(res => {
@@ -434,96 +448,198 @@ export default {
       return new Promise((resolve, reject) => {
         // borrar
         const response = {
-          mapping_data: {
-            file_columns_names: [
-              'Database ID',
-              'Case Number',
-              'Formatted Case Number',
-              'Filing Date',
-              'Case Type',
-              'Property Owner',
-              'Parcel Number',
-              'Folio',
-              'Property Address',
-              'Property City',
-              'Property State',
-              'Property Zip',
-              'Petitioner',
-            ],
-            file_schema_columns: [
-              {
-                id: 1,
-                name: 'case number',
-                type: 'string',
-                required: true,
-                auto_complete: false,
-                relationship_verification: false,
-              },
-              {
-                id: 2,
-                name: 'eviction id',
-                type: 'string',
-                required: false,
-                auto_complete: false,
-                relationship_verification: false,
-              },
-              {
-                id: 3,
-                name: 'folio',
-                type: 'string',
-                required: false,
-                auto_complete: true,
-                relationship_verification: true,
-              },
-              {
-                id: 4,
-                name: 'date filed',
-                type: 'date',
-                required: false,
-                auto_complete: false,
-                relationship_verification: false,
-              },
-              {
-                id: 5,
-                name: 'type',
-                type: 'string',
-                required: false,
-                auto_complete: false,
-                relationship_verification: false,
-              },
-              {
-                id: 6,
-                name: 'fips',
-                type: 'string',
-                required: false,
-                auto_complete: false,
-                relationship_verification: false,
-              },
-            ],
-            match_columns: {
-              'Case Number': {
-                id: 1,
-                name: 'case number',
-                type: 'string',
-                required: true,
-                auto_complete: false,
-                relationship_verification: false,
-              },
-              Folio: {
-                id: 3,
-                name: 'folio',
-                type: 'string',
-                required: false,
-                auto_complete: true,
-                relationship_verification: true,
+          message: 'success',
+          data: {
+            mapping_data: {
+              file_columns_names: [
+                'Database ID',
+                'Case Number',
+                'Formatted Case Number',
+                'Filing Date',
+                'Case Type',
+                'Property Owner',
+                'Parcel Number',
+                'Folio',
+                'Property Address',
+                'Property City',
+                'Property State',
+                'Property Zip',
+                'Petitioner',
+              ],
+              file_schema_columns: [
+                {
+                  id: 1,
+                  name: 'case number',
+                  type: 'string',
+                  required: true,
+                  external_relationship: false,
+                  relationship_verification: false,
+                },
+                {
+                  id: 2,
+                  name: 'eviction id',
+                  type: 'string',
+                  required: false,
+                  external_relationship: false,
+                  relationship_verification: false,
+                },
+                {
+                  id: 3,
+                  name: 'folio',
+                  type: 'string',
+                  required: false,
+                  external_relationship: true,
+                  relationship_verification: true,
+                },
+                {
+                  id: 4,
+                  name: 'date filed',
+                  type: 'date',
+                  required: false,
+                  external_relationship: false,
+                  relationship_verification: false,
+                },
+                {
+                  id: 5,
+                  name: 'type',
+                  type: 'string',
+                  required: false,
+                  external_relationship: false,
+                  relationship_verification: false,
+                },
+                {
+                  id: 6,
+                  name: 'fips',
+                  type: 'string',
+                  required: false,
+                  external_relationship: false,
+                  relationship_verification: false,
+                },
+              ],
+              match_columns: {
+                'Case Number': {
+                  id: 1,
+                  name: 'case number',
+                  type: 'string',
+                  required: true,
+                  external_relationship: false,
+                  relationship_verification: false,
+                },
+                Folio: {
+                  id: 3,
+                  name: 'folio',
+                  type: 'string',
+                  required: false,
+                  external_relationship: true,
+                  relationship_verification: true,
+                },
               },
             },
+            imported_file_id: 10,
+            sample: {
+              schema: {
+                fields: [
+                  {
+                    name: 'index',
+                    type: 'integer',
+                  },
+                  {
+                    name: 'Database ID',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Case Number',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Formatted Case Number',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Filing Date',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Case Type',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Property Owner',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Parcel Number',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Folio',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Property Address',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Property City',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Property State',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Property Zip',
+                    type: 'string',
+                  },
+                  {
+                    name: 'Petitioner',
+                    type: 'string',
+                  },
+                ],
+                primaryKey: [
+                  'index',
+                ],
+                pandas_version: '0.20.0',
+              },
+              data: [
+                {
+                  index: 0,
+                  'Database ID': 'EVICT02420300965102021009254CC24',
+                  'Case Number': '2021-009254-CC-24',
+                  'Formatted Case Number': '2021009254CC24',
+                  'Filing Date': '20/09/2021',
+                  'Case Type': 'Evictions - Residential',
+                  'Property Owner': 'HERRERA, PATRICIA',
+                  'Parcel Number': '02-4203-009-6510',
+                  Folio: null,
+                  'Property Address': null,
+                  'Property City': 'MIAMI BEACH',
+                  'Property State': 'FL',
+                  'Property Zip': '33139',
+                  Petitioner: 'COOJO CORPORATION',
+                },
+                {
+                  index: 1,
+                  'Database ID': 'EVICT02420300933402021009277CC24',
+                  'Case Number': null,
+                  'Formatted Case Number': '2021009277CC24',
+                  'Filing Date': '20/09/2021',
+                  'Case Type': 'Evictions - Non-Residential',
+                  'Property Owner': 'Zamora, Angelina',
+                  'Parcel Number': '02-4203-009-3340',
+                  Folio: null,
+                  'Property Address': null,
+                  'Property City': 'Miami Beach',
+                  'Property State': 'FL',
+                  'Property Zip': '33139',
+                  Petitioner: 'Candace Partnership, Ltd.',
+                },
+              ],
+            },
           },
-          imported_file_id: 2,
-          message: 'success',
         }
-        this.importedFileId = response.imported_file_id
-        this.columnsData = response
+        this.importedFileId = response.data.imported_file_id
+        this.columnsData = response.data
         localStorage.setItem('uploadFile', JSON.stringify(
           { importedFileId: this.importedFileId },
         ))
@@ -601,11 +717,51 @@ export default {
       })
     },
     loadColumns() {
-      this.itemsMap = this.columnsData.mapping_data.file_columns_names.map(element => ({ file_column_name: element, file_schema_column: null, default_value: null }))
+      const sampleData = this.columnsData.sample.data
+      this.itemsMap = this.columnsData.mapping_data.file_columns_names.map(element => ({
+        file_column_name: element, file_schema_column: null, default_value: null, first_sample: sampleData[0][element], second_sample: sampleData[1][element],
+      }))
       this.fileSchemaColumns = this.columnsData.mapping_data.file_schema_columns.map(obj => ({ ...obj, selected: false }))
     },
     validationMap() {
       return new Promise((resolve, reject) => {
+        this.fileSchemaColumns.forEach(element => {
+          if (element.required && !element.selected) {
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Error',
+                icon: 'BellIcon',
+                text: 'Required Schema Column is not mapped. ❌',
+                variant: 'danger',
+              },
+            })
+            reject()
+          }
+        })
+        const mapData = {
+          map_columns: [],
+          file_extra_columns: [],
+          schema_extra_columns: [],
+        }
+        this.itemsMap.filter(item => item.file_schema_column !== null).forEach(element => {
+          mapData.map_columns.push(
+            {
+              file_column_name: element.file_column_name,
+              file_schema_column_id: element.file_schema_column.id,
+              default_value: element.default_value,
+            },
+          )
+        })
+        this.schemaExtraColumns.forEach(element => {
+          mapData.schema_extra_columns.push(
+            {
+              schema_column_id: element.schema_column_id,
+              default_value: element.default_value,
+            },
+          )
+        })
+        this.mapColumns(mapData)
         resolve(true)
         reject()
       })
@@ -752,4 +908,5 @@ export default {
   position: absolute;
   top: 1em;
 }
+
 </style>
