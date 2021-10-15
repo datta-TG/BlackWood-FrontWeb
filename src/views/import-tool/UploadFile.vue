@@ -318,6 +318,7 @@ import {
   BSpinner,
   BTabs,
   BTab,
+  BCardText,
 } from 'bootstrap-vue'
 import vSelect from 'vue-select'
 import Ripple from 'vue-ripple-directive'
@@ -349,6 +350,7 @@ export default {
     BSpinner,
     BTabs,
     BTab,
+    BCardText,
     DefaultValues,
     PreviewDataFilter,
   },
