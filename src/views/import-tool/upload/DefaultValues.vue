@@ -32,7 +32,7 @@
                 :reduce="item => item.id"
                 :options="fileSchemaColumns"
                 :selectable="(option) => !option.selected"
-                @option:selected="selectFileSchemaColumn"
+                @input="reviewFileSchemaColumn"
               >
                 <template v-slot:option="option">
                   {{ option.name }}
@@ -161,8 +161,17 @@ export default {
     window.removeEventListener('resize', this.initTrHeight)
   },
   methods: {
-    selectFileSchemaColumn(e) {
-      e.selected = true
+    reviewFileSchemaColumn() {
+      const fileSchemaColumns = []
+      this.items.forEach(element => {
+        if (element.schema_column_id) {
+          fileSchemaColumns.push(element.schema_column_id)
+        }
+      })
+      this.fileSchemaColumns.forEach(element => {
+        // eslint-disable-next-line no-param-reassign
+        element.selected = fileSchemaColumns.includes(element.id)
+      })
       this.$emit('update:fileSchemaColumns', this.fileSchemaColumns)
     },
     repeateAgain() {

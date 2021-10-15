@@ -226,6 +226,10 @@
         <tab-content
           title="Preview Data | Finish"
         >
+          <preview-data-filter
+            :tags-filter.sync="tagsFilter"
+            :tags-options="tagsOptions"
+          />
           <b-row class="mb-1">
             <b-col cols="12">
               <b-table
@@ -304,6 +308,7 @@ import services from '@/plugins/services/import-tool'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 import DefaultValues from './upload/DefaultValues.vue'
+import PreviewDataFilter from './upload/PreviewDataFilter.vue'
 
 export default {
   components: {
@@ -325,6 +330,7 @@ export default {
     BTabs,
     BTab,
     DefaultValues,
+    PreviewDataFilter,
   },
   directives: {
     Ripple,
@@ -374,9 +380,16 @@ export default {
       perPageMapped: 10,
       totalRowsMapped: 1,
       currentPageMapped: 1,
+      tagsFilter: [],
+      tagsOptions: [],
       fieldsMapped: [],
       itemsMapped: [],
     }
+  },
+  watch: {
+    tagsFilter() {
+      this.viewMappedFile()
+    },
   },
   async mounted() {
     await this.getCounties()
@@ -418,6 +431,15 @@ export default {
     }
   },
   methods: {
+    getTags() {
+      services.getTags().then(res => {
+        if (res.status === 200) {
+          this.tagsOptions = res.data.tags.map(tag => ({
+            name: tag, value: tag,
+          }))
+        }
+      })
+    },
     reviewFileSchemaColumn() {
       const fileSchemaColumns = []
       this.itemsMap.forEach(element => {
@@ -773,6 +795,7 @@ export default {
           .mapColumns(this.importedFileId, mapData)
           .then(() => {
             this.loading = false
+            this.getTags()
             this.viewMappedFile()
             this.$toast({
               component: ToastificationContent,
@@ -794,6 +817,7 @@ export default {
         base: !this.uploadMap,
         skip: this.currentPageMapped - 1,
         limit: this.perPageMapped,
+        tags: this.tagsFilter,
       }
       services.viewFile(this.importedFileId, pagination).then(res => {
         this.loading = false
