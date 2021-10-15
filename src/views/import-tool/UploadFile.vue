@@ -232,6 +232,25 @@
             :tags-options="tagsOptions"
           />
           <b-row class="mb-1">
+            <b-col
+              cols="12"
+              class="mb-2"
+            >
+              <div>
+                <b-card-text class="mb-25">
+                  <b>Total:</b> {{ metaInsights.total }}
+                </b-card-text>
+                <b-card-text class="mb-25">
+                  <b>Skip:</b> {{ metaInsights.skip }}
+                </b-card-text>
+                <b-card-text class="mb-25">
+                  <b>Update:</b> {{ metaInsights.update }}
+                </b-card-text>
+                <b-card-text class="mb-25">
+                  <b>Add:</b> {{ metaInsights.add }}
+                </b-card-text>
+              </div>
+            </b-col>
             <b-col cols="12">
               <b-table
                 responsive
@@ -379,6 +398,7 @@ export default {
       fileSchemaColumns: [],
       defaultSchemaColumns: [],
       schemaExtraColumns: [],
+      metaInsights: {},
       perPageMapped: 10,
       totalRowsMapped: 1,
       currentPageMapped: 1,
@@ -600,7 +620,8 @@ export default {
       if (this.uploadMap) {
         services
           .mapColumns(this.importedFileId, mapData)
-          .then(() => {
+          .then(response => {
+            this.metaInsights = response.data.meta_insights
             this.loading = false
             this.getTags()
             this.viewMappedFile()
