@@ -132,6 +132,12 @@ export default {
         return []
       },
     },
+    defaultSchemaColumns: {
+      type: Array,
+      default() {
+        return []
+      },
+    },
     schemaExtraColumns: {
       type: Array,
       required: true,
@@ -162,17 +168,13 @@ export default {
   },
   methods: {
     reviewFileSchemaColumn() {
-      const fileSchemaColumns = []
+      const defaultSchemaColumns = []
       this.items.forEach(element => {
         if (element.schema_column_id) {
-          fileSchemaColumns.push(element.schema_column_id)
+          defaultSchemaColumns.push(element.schema_column_id)
         }
       })
-      this.fileSchemaColumns.forEach(element => {
-        // eslint-disable-next-line no-param-reassign
-        element.selected = fileSchemaColumns.includes(element.id)
-      })
-      this.$emit('update:fileSchemaColumns', this.fileSchemaColumns)
+      this.$emit('update:defaultSchemaColumns', defaultSchemaColumns)
     },
     repeateAgain() {
       this.items.push({

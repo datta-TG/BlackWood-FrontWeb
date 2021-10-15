@@ -203,6 +203,7 @@
               <b-tab title="Assign Default Value">
                 <default-values
                   :file-schema-columns.sync="fileSchemaColumns"
+                  :default-schema-columns.sync="defaultSchemaColumns"
                   :schema-extra-columns.sync="schemaExtraColumns"
                 />
               </b-tab>
@@ -376,6 +377,7 @@ export default {
       ],
       itemsMap: [],
       fileSchemaColumns: [],
+      defaultSchemaColumns: [],
       schemaExtraColumns: [],
       perPageMapped: 10,
       totalRowsMapped: 1,
@@ -389,6 +391,9 @@ export default {
   watch: {
     tagsFilter() {
       this.viewMappedFile()
+    },
+    defaultSchemaColumns() {
+      this.reviewFileSchemaColumn()
     },
   },
   async mounted() {
@@ -446,6 +451,9 @@ export default {
         if (element.file_schema_column) {
           fileSchemaColumns.push(element.file_schema_column.id)
         }
+      })
+      this.defaultSchemaColumns.forEach(element => {
+        fileSchemaColumns.push(element)
       })
       this.fileSchemaColumns.forEach(element => {
         // eslint-disable-next-line no-param-reassign
