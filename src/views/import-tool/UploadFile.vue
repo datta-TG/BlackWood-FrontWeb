@@ -631,7 +631,7 @@ export default {
         if (res.status === 200) {
           this.totalRowsMapped = res.data.total_rows
           if (res.data?.data?.schema?.fields) {
-            this.fieldsMapped = res.data.data.schema.fields.map(field => field.name)
+            this.fieldsMapped = res.data.data.schema.fields.map(field => field.name).filter(field => !['__skipped__', '__updated__', '__added__'].includes(field))
             this.itemsMapped = res.data.data.data
           }
         }
