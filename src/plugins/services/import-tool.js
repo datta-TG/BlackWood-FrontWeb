@@ -19,7 +19,7 @@ export default {
   },
   async getTags() {
     try {
-      const response = await axios.get('view_file/get_tags')
+      const response = await axios.get('upload_file/get_tags')
       return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
