@@ -510,7 +510,6 @@ export default {
               if (res.status === 201) {
                 this.uploadMap = true
                 const { data } = res.data
-                console.log(data)
                 this.importedFileId = data.imported_file_id
                 this.columnsData = data
                 localStorage.setItem('uploadFile', JSON.stringify(
