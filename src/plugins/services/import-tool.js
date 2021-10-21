@@ -1,5 +1,6 @@
 import axios from '@axios'
 
+// Endpoints
 export default {
   async getCounties() {
     try {
