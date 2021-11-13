@@ -2,13 +2,13 @@ const taskView = [
   {
     title: 'Delinquency',
     route: 'task-view-delinquency',
-    tag: '1',
+    tag: null,
     tagVariant: 'light-warning',
   },
   {
     title: 'Eviction',
     route: 'task-view-eviction',
-    tag: '1',
+    tag: null,
     tagVariant: 'light-warning',
   },
   {
