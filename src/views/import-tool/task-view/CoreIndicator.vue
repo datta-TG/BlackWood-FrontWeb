@@ -87,7 +87,6 @@
             :fields="[...fields].sort(sortMethod)"
             bordered
             responsive
-            sticky-header
             class="mb-2 mw-100"
             show-empty
             empty-text="No records found"
