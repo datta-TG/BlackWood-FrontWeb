@@ -50,6 +50,36 @@
           </b-form-checkbox>
         </b-form-group>
       </b-modal>
+      <b-row class="mb-2">
+        <b-col cols="12">
+          <!-- pagination -->
+          <div class="d-flex justify-content-between flex-wrap">
+            <div class="d-flex align-items-center mb-0">
+              <span class="text-nowrap ">
+                Show
+              </span>
+              <b-form-select
+                v-model="perPage"
+                :options="['10','15','20']"
+                class="mx-1"
+                @input="viewData"
+              />
+              <span class="text-nowrap"> entries </span>
+            </div>
+            <div>
+              <b-pagination
+                v-model="currentPage"
+                :total-rows="totalRows"
+                :per-page="perPage"
+                align="right"
+                size="md"
+                class="my-0"
+                @input="viewData"
+              />
+            </div>
+          </div>
+        </b-col>
+      </b-row>
       <b-row>
         <b-col cols="12">
           <b-table
@@ -57,6 +87,7 @@
             :fields="[...fields].sort(sortMethod)"
             bordered
             responsive
+            sticky-header
             class="mb-2 mw-100"
             show-empty
             empty-text="No records found"
@@ -193,36 +224,6 @@
               </div>
             </template>
           </b-table>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12">
-          <!-- pagination -->
-          <div class="d-flex justify-content-between flex-wrap">
-            <div class="d-flex align-items-center mb-0">
-              <span class="text-nowrap ">
-                Show
-              </span>
-              <b-form-select
-                v-model="perPage"
-                :options="['10','15','20']"
-                class="mx-1"
-                @input="viewData"
-              />
-              <span class="text-nowrap"> entries </span>
-            </div>
-            <div>
-              <b-pagination
-                v-model="currentPage"
-                :total-rows="totalRows"
-                :per-page="perPage"
-                align="right"
-                size="md"
-                class="my-0"
-                @input="viewData"
-              />
-            </div>
-          </div>
         </b-col>
       </b-row>
       <b-sidebar
@@ -469,4 +470,8 @@ export default {
     .b-sidebar {
         background-color: white !important;
     }
+
+     .table-responsive {
+        min-height: 200px;
+      }
 </style>
