@@ -686,7 +686,7 @@ export default {
               this.$toast({
                 component: ToastificationContent,
                 props: {
-                  title: 'Completado',
+                  title: 'Complete',
                   icon: 'BellIcon',
                   text: 'Upload Finished Successfully. ⭐️',
                   variant: 'success',

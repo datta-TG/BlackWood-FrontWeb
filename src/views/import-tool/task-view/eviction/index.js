@@ -43,6 +43,7 @@ export default [
     active: true,
     update: true,
     select: false,
+    date: false,
   },
   {
     id: 5,
@@ -53,6 +54,7 @@ export default [
     active: false,
     update: true,
     select: false,
+    date: true,
   },
   {
     id: 6,
@@ -67,6 +69,7 @@ export default [
       { label: 'Residential', value: 'RESIDENTIAL' },
       { label: 'Non Residential', value: 'NON-RESIDENTIAL' },
     ],
+    date: false,
   },
   {
     id: 7,
@@ -77,6 +80,7 @@ export default [
     active: true,
     update: true,
     select: false,
+    date: false,
   },
   {
     id: 8,
@@ -87,6 +91,7 @@ export default [
     active: false,
     update: true,
     select: false,
+    date: false,
   },
   {
     id: 9,
@@ -97,6 +102,7 @@ export default [
     active: false,
     update: true,
     select: false,
+    date: false,
   },
   {
     id: 9,
@@ -107,6 +113,7 @@ export default [
     active: false,
     update: false,
     select: false,
+    date: false,
   },
   {
     id: 10,
@@ -116,6 +123,7 @@ export default [
     visible: true,
     active: false,
     update: false,
+    date: false,
   },
   {
     id: 11,
@@ -125,5 +133,6 @@ export default [
     visible: true,
     active: true,
     update: false,
+    date: false,
   },
 ]

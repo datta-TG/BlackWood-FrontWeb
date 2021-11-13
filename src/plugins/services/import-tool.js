@@ -90,10 +90,64 @@ export default {
     }
   },
 
-  async taskViewEviction(pagination) {
+  async getTaskViewTags() {
     try {
-      const response = await axios.post('/import_tool/task_view/eviction/index', pagination)
+      const response = await axios.get('/import_tool/task_view/tags')
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+
+  async foliosMatch(query) {
+    try {
+      const response = await axios.get(`/import_tool/task_view/property/folios?query_folio=${query}`)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+
+  async taskViewCoreIndicator(coreIndicator, pagination) {
+    try {
+      const response = await axios.post(`/import_tool/task_view/${coreIndicator}/index`, pagination)
       return response.data
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+
+  async updateCoreIndicator(coreIndicator, core) {
+    try {
+      const response = await axios.post(`/import_tool/task_view/${coreIndicator}/update`, core)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+
+  async updateFoliosCoreIndicator(coreIndicator, data) {
+    try {
+      const response = await axios.post(`/import_tool/task_view/${coreIndicator}/update/properties`, data)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+
+  async deleteCoreIndicator(coreIndicator, id) {
+    try {
+      const response = await axios.delete(`/import_tool/task_view/${coreIndicator}/delete/${id}`)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+
+  async sendCoreIndicator(coreIndicator, id) {
+    try {
+      const response = await axios.post(`/import_tool/task_view/${coreIndicator}/send/${id}`)
+      return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
     }
