@@ -213,7 +213,7 @@ export default [
   {
     id: 19,
     key: 'actions',
-    label: 'Actions',
+    label: '',
     multiple: false,
     visible: false,
     active: true,

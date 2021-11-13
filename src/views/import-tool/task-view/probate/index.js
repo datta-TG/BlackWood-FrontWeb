@@ -135,7 +135,7 @@ export default [
   {
     id: 13,
     key: 'actions',
-    label: 'Actions',
+    label: '',
     multiple: false,
     visible: false,
     active: true,

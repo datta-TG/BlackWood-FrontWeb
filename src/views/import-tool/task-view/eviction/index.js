@@ -130,9 +130,8 @@ export default [
     key: 'actions',
     label: '',
     multiple: false,
-    visible: true,
+    visible: false,
     active: true,
     update: false,
-    date: false,
   },
 ]

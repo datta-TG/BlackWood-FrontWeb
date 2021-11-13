@@ -168,7 +168,7 @@ export default [
   {
     id: 16,
     key: 'actions',
-    label: 'Actions',
+    label: '',
     multiple: false,
     visible: false,
     active: true,
