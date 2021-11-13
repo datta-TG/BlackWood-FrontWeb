@@ -4,7 +4,7 @@ import axios from '@axios'
 export default {
   async getCounties() {
     try {
-      const response = await axios.get('/import/counties')
+      const response = await axios.get('/import_tool/counties')
       return response.data
     } catch (error) {
       return Promise.reject()
@@ -12,7 +12,7 @@ export default {
   },
   async getFileTypes(id) {
     try {
-      const response = await axios.get(`/import/filetypes/${id}`)
+      const response = await axios.get(`/import_tool/filetypes/${id}`)
       return response.data
     } catch (error) {
       return Promise.reject()
@@ -20,7 +20,7 @@ export default {
   },
   async getTags() {
     try {
-      const response = await axios.get('upload_file/get_tags')
+      const response = await axios.get('/import_tool/upload_file/get_tags')
       return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
@@ -28,7 +28,7 @@ export default {
   },
   async getAllFileTypes() {
     try {
-      const response = await axios.get('/import/filetypes')
+      const response = await axios.get('/import_tool/filetypes')
       return response.data
     } catch (error) {
       return Promise.reject()
@@ -36,7 +36,7 @@ export default {
   },
   async uploadFile(type, data) {
     try {
-      const response = await axios.post(`/upload_file/upload?file_schema_id=${type}`, data, {
+      const response = await axios.post(`/import_tool/upload_file/upload?file_schema_id=${type}`, data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -48,7 +48,7 @@ export default {
   },
   async viewFile(id, pagination) {
     try {
-      const response = await axios.post(`/import/view_file/${id}`, pagination)
+      const response = await axios.post(`/import_tool/view_file/${id}`, pagination)
       return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()
@@ -56,7 +56,7 @@ export default {
   },
   async mapColumns(importedFileId, data) {
     try {
-      const response = await axios.post(`/upload_file/map_columns/${importedFileId}`, data)
+      const response = await axios.post(`/import_tool/upload_file/map_columns/${importedFileId}`, data)
       return response.data
     } catch (error) {
       return Promise.reject()
@@ -64,7 +64,7 @@ export default {
   },
   async commitUpload(importedFileId) {
     try {
-      const response = await axios.post(`/upload_file/commit_upload/${importedFileId}`)
+      const response = await axios.post(`/import_tool/upload_file/commit_upload/${importedFileId}`)
       return response.data
     } catch (error) {
       return Promise.reject()
@@ -72,7 +72,7 @@ export default {
   },
   async abortUpload(importedFileId) {
     try {
-      const response = await axios.delete(`/upload_file/abort_upload/${importedFileId}`)
+      const response = await axios.delete(`/import_tool/upload_file/abort_upload/${importedFileId}`)
       return response.data
     } catch (error) {
       return Promise.reject()
@@ -80,6 +80,24 @@ export default {
   },
 
   // imported files
+
+  async pendingTasks() {
+    try {
+      const response = await axios.get('/import_tool/task_view/pending_tasks')
+      return response.data
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
+
+  async taskViewEviction(pagination) {
+    try {
+      const response = await axios.post('/import_tool/task_view/eviction/index', pagination)
+      return response.data
+    } catch (error) {
+      return Promise.reject()
+    }
+  },
 
   async viewImportedFiles(pagination) {
     try {

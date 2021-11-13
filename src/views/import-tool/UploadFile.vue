@@ -170,7 +170,7 @@
                       <template v-slot:option="option">
                         {{ option.name }}
                         <span
-                          v-if="option.required"
+                          v-if="option.is_required"
                           class="text-danger"
                         >
                           *
@@ -247,7 +247,10 @@
                   <b>Update:</b> {{ metaInsights.update }}
                 </b-card-text>
                 <b-card-text class="mb-25">
-                  <b>Add:</b> {{ metaInsights.add }}
+                  <b>Review:</b> {{ metaInsights.review }}
+                </b-card-text>
+                <b-card-text class="mb-25">
+                  <b>New:</b> {{ metaInsights.new }}
                 </b-card-text>
               </div>
             </b-col>

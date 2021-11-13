@@ -1,3 +1,36 @@
+const taskView = [
+  {
+    title: 'Delinquency',
+    route: 'task-view-delinquency',
+    tag: '1',
+    tagVariant: 'light-warning',
+  },
+  {
+    title: 'Eviction',
+    route: 'task-view-eviction',
+    tag: '1',
+    tagVariant: 'light-warning',
+  },
+  {
+    title: 'Foreclosure',
+    route: 'task-view-foreclosure',
+    tag: null,
+    tagVariant: 'light-warning',
+  },
+  {
+    title: 'Probate',
+    route: 'task-view-probate',
+    tag: null,
+    tagVariant: 'light-warning',
+  },
+  {
+    title: 'Tax Auction',
+    route: 'task-view-tax-auction',
+    tag: null,
+    tagVariant: 'light-warning',
+  },
+]
+
 export default [
   {
     title: 'Import Tool',
@@ -8,8 +41,8 @@ export default [
         route: 'upload-file',
       },
       {
-        title: 'View Files',
-        route: 'imported-files',
+        title: 'Task View',
+        children: taskView,
       },
     ],
   },

@@ -26,6 +26,77 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/task-view/delinquency',
+      name: 'task-view-delinquency',
+      component: () => import('@/views/import-tool/task-view/delinquency/Delinquency.vue'),
+      meta: {
+        pageTitle: 'Task View',
+        breadcrumb: [
+          {
+            text: 'Delinquency',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/task-view/eviction',
+      name: 'task-view-eviction',
+      component: () => import('@/views/import-tool/task-view/eviction/Eviction.vue'),
+      meta: {
+        pageTitle: 'Task View',
+        breadcrumb: [
+          {
+            text: 'Eviction',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/task-view/foreclosure',
+      name: 'task-view-foreclosure',
+      component: () => import('@/views/import-tool/task-view/foreclosure/Foreclosure.vue'),
+      meta: {
+        pageTitle: 'Task View',
+        breadcrumb: [
+          {
+            text: 'Foreclosure',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/task-view/probate',
+      name: 'task-view-probate',
+      component: () => import('@/views/import-tool/task-view/probate/Probate.vue'),
+      meta: {
+        pageTitle: 'Task View',
+        breadcrumb: [
+          {
+            text: 'Probate',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
+      path: '/task-view/tax-auction',
+      name: 'task-view-tax-auction',
+      component: () => import('@/views/import-tool/task-view/tax-auction/TaxAuction.vue'),
+      meta: {
+        pageTitle: 'Task View',
+        breadcrumb: [
+          {
+            text: 'Tax Auction',
+            active: true,
+          },
+        ],
+      },
+    },
+    // borrar
+    {
       path: '/imported-files',
       name: 'imported-files',
       component: () => import('@/views/import-tool/ImportedFiles.vue'),
@@ -73,6 +144,7 @@ const router = new VueRouter({
         ],
       },
     },
+    // fin borrar
     {
       path: '/login',
       name: 'login',
