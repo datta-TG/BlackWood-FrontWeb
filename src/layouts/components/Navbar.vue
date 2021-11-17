@@ -55,7 +55,7 @@
         </b-dropdown-item>
 
         <b-dropdown-item
-          v-b-toggle.sidebar-edit
+          v-b-toggle.sidebar-setting
           link-class="d-flex align-items-center"
         >
           <feather-icon
@@ -68,7 +68,7 @@
       </b-nav-item-dropdown>
     </b-navbar-nav>
     <b-sidebar
-      id="sidebar-edit"
+      id="sidebar-setting"
       backdrop-variant="secondary"
       backdrop
       width="400px"
