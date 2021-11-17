@@ -53,18 +53,45 @@
           />
           <span>Logout</span>
         </b-dropdown-item>
+
+        <b-dropdown-item
+          v-b-toggle.sidebar-edit
+          link-class="d-flex align-items-center"
+        >
+          <feather-icon
+            size="16"
+            icon="SettingsIcon"
+            class="mr-50"
+          />
+          <span>Settings</span>
+        </b-dropdown-item>
       </b-nav-item-dropdown>
     </b-navbar-nav>
+    <b-sidebar
+      id="sidebar-edit"
+      backdrop-variant="secondary"
+      backdrop
+      width="400px"
+      right
+      shadow
+    >
+      <template #default="{ hide }">
+        <settings
+          @close="hide"
+        />
+      </template>
+    </b-sidebar>
   </div>
 </template>
 
 <script>
 import {
-  BLink, BNavbarNav, BNavItemDropdown, BDropdownItem, BAvatar,
+  BLink, BNavbarNav, BNavItemDropdown, BDropdownItem, BAvatar, BSidebar, VBToggle,
 } from 'bootstrap-vue'
 import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue'
 import { Auth } from 'aws-amplify'
 import services from '@/plugins/services/import-tool'
+import Settings from '@/components/Settings.vue'
 
 export default {
   components: {
@@ -73,9 +100,14 @@ export default {
     BNavItemDropdown,
     BDropdownItem,
     BAvatar,
+    BSidebar,
 
     // Navbar Components
     DarkToggler,
+    Settings,
+  },
+  directives: {
+    'b-toggle': VBToggle,
   },
   props: {
     toggleVerticalMenuActive: {
@@ -117,3 +149,9 @@ export default {
   },
 }
 </script>
+
+<style>
+.b-sidebar {
+        background-color: white !important;
+    }
+</style>
