@@ -60,7 +60,7 @@ export default {
             props: {
               title: 'Complete',
               icon: 'BellIcon',
-              text: 'Database Started Successfully. 🟢',
+              text: response.data.message === '' ? 'Database Starting Successfully. 🟢' : response.data.message,
               variant: 'success',
             },
           })
@@ -75,7 +75,7 @@ export default {
             props: {
               title: 'Complete',
               icon: 'BellIcon',
-              text: 'Database Stoped Successfully. 🔴',
+              text: response.data.message === '' ? 'Database Stoping Successfully. 🔴' : response.data.message,
               variant: 'success',
             },
           })
