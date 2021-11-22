@@ -1,7 +1,7 @@
 <template>
   <core-indicator
     :core-indicator-data="delinquency"
-    core-indicator="delinquency"
+    core-indicator="tax_delinquency"
   />
 </template>
 

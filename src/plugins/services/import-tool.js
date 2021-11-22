@@ -144,9 +144,13 @@ export default {
     }
   },
 
-  async sendCoreIndicator(coreIndicator, id) {
+  async tagRow(coreIndicator, id, tag) {
     try {
-      const response = await axios.post(`/import_tool/task_view/${coreIndicator}/send/${id}`)
+      const data = {
+        id,
+        tag,
+      }
+      const response = await axios.post(`/import_tool/task_view/${coreIndicator}/tag`, data)
       return { data: response.data, status: response.status }
     } catch (error) {
       return Promise.reject()

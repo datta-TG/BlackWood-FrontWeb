@@ -91,6 +91,18 @@
             show-empty
             empty-text="No records found"
           >
+            <!-- Column: tag -->
+            <template #cell(tag)="data">
+              <div lass="d-flex flex-row justify-content-center">
+                <v-select
+                  class="w-100 input-table"
+                  placeholder="Tags"
+                  :options="tagsOptions"
+                  @input="setTag"
+                  @open="focus(data.item)"
+                />
+              </div>
+            </template>
 
             <!-- Column: Actions -->
             <template #cell(actions)="data">
@@ -117,6 +129,7 @@
                     <span>Delete</span>
                   </b-dropdown-item>
                   <b-dropdown-item
+                    v-if="configData.settings.updateFolios"
                     v-b-toggle.sidebar-folios
                     @click="editFolio(data.item)"
                   >
@@ -135,13 +148,6 @@
                       class="mr-50"
                     />
                     <span>Edit</span>
-                  </b-dropdown-item>
-                  <b-dropdown-item @click="sendRow(data.item)">
-                    <feather-icon
-                      icon="PlusIcon"
-                      class="mr-50"
-                    />
-                    <span>Send</span>
                   </b-dropdown-item>
                 </b-dropdown>
               </div>
@@ -237,7 +243,7 @@
           <div class="px-3 py-2">
             <form-update
               :core-indicator="coreIndicator"
-              :fields="configData"
+              :core-indicator-config="configData"
               :core="editData"
               @close="hide"
               @reload="viewData"
@@ -272,6 +278,7 @@
 import {
   BCard, BTable, BRow, BCol, BPagination, BFormSelect, BButton, BModal, VBModal, BFormCheckbox, BFormGroup, BSidebar, VBToggle, BDropdown, BDropdownItem, BSpinner,
 } from 'bootstrap-vue'
+import vSelect from 'vue-select'
 import services from '@/plugins/services/import-tool'
 import FormUpdate from '@/views/import-tool/task-view/FormUpdate.vue'
 import FormFolios from '@/views/import-tool/task-view/FormFolios.vue'
@@ -293,6 +300,7 @@ export default {
     BDropdown,
     BDropdownItem,
     BSpinner,
+    vSelect,
 
     FormUpdate,
     FormFolios,
@@ -307,24 +315,26 @@ export default {
       default: '',
     },
     coreIndicatorData: {
-      type: Array,
-      default: () => [],
+      type: Object,
+      default: () => {},
     },
   },
   data() {
     return {
-      fields: this.coreIndicatorData.filter(item => item.active),
+      fields: this.coreIndicatorData.fields.filter(item => item.active),
       items: [],
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
       editData: null,
       loading: false,
+      tagsOptions: [],
+      focusItem: null,
     }
   },
   computed: {
     coreIndicatorFields() {
-      return this.coreIndicatorData.filter(item => item.visible)
+      return this.coreIndicatorData.fields.filter(item => item.visible)
     },
     configData() {
       return this.coreIndicatorData
@@ -332,10 +342,18 @@ export default {
   },
   async mounted() {
     await this.viewData()
+    await this.getTags()
   },
   methods: {
+    getTags() {
+      services.getTaskViewTags().then(res => {
+        if (res.status === 200) {
+          this.tagsOptions = res.data.tags
+        }
+      })
+    },
     column(key) {
-      const object = this.coreIndicatorData.find(field => field.key === key)
+      const object = this.coreIndicatorData.fields.find(field => field.key === key)
       if (object !== undefined) {
         return object
       }
@@ -373,13 +391,16 @@ export default {
     editFolio(row) {
       this.editData = row
     },
-    sendRow(row) {
+    focus(item) {
+      this.focusItem = item
+    },
+    setTag(val) {
       this.$swal({
         title: 'Are you sure?',
-        text: 'Row will be added to the Data Base!',
+        text: val === 'Complete' ? 'Row will be added to the Data Base!' : 'Row will be tagged',
         icon: 'info',
         showCancelButton: true,
-        confirmButtonText: 'Yes, add it!',
+        confirmButtonText: 'Yes, do it!',
         customClass: {
           confirmButton: 'btn btn-success',
           cancelButton: 'btn btn-secondary ml-1',
@@ -388,7 +409,7 @@ export default {
       }).then(result => {
         if (result.value) {
           this.loading = true
-          services.sendCoreIndicator(this.coreIndicator, row.id).then(res => {
+          services.tagRow(this.coreIndicator, this.focusItem.id, val).then(res => {
             this.loading = false
             if (res.status === 200) {
               this.$toast({
@@ -473,4 +494,8 @@ export default {
      .table-responsive {
         min-height: 200px;
       }
+
+      .input-table{
+        min-width: 100px;
+}
 </style>

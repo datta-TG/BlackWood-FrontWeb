@@ -43,21 +43,6 @@
           />
         </b-form-group>
       </b-col>
-      <b-col>
-        <b-form-group
-          label="Tag"
-          label-for="tag"
-        >
-          <v-select
-            v-model="localData.tag"
-            label="value"
-            :reduce="val => val.value"
-            class="w-100"
-            placeholder="Tags"
-            :options="tagsOptions"
-          />
-        </b-form-group>
-      </b-col>
       <!-- submit  -->
       <b-col cols="12">
         <b-button
@@ -103,9 +88,9 @@ export default {
       type: String,
       default: '',
     },
-    fields: {
-      type: [Array, null],
-      default: () => [],
+    coreIndicatorConfig: {
+      type: Object,
+      default: () => {},
     },
     core: {
       type: Object,
@@ -115,12 +100,11 @@ export default {
   data() {
     return {
       localData: null,
-      tagsOptions: [],
     }
   },
   computed: {
     coreFields() {
-      return this.fields.filter(item => item.update)
+      return this.coreIndicatorConfig.fields.filter(item => item.update)
     },
   },
   watch: {
@@ -128,19 +112,7 @@ export default {
       this.localData = { ...this.core }
     },
   },
-  async mounted() {
-    await this.getTags()
-  },
   methods: {
-    getTags() {
-      services.getTaskViewTags().then(res => {
-        if (res.status === 200) {
-          this.tagsOptions = res.data.tags.map(tag => ({
-            value: tag,
-          }))
-        }
-      })
-    },
     update() {
       const data = { ...this.localData }
 
@@ -148,7 +120,7 @@ export default {
         if (data[key] === '') {
           data[key] = null
         }
-        if (this.fields.find(item => item.key === key)?.date) {
+        if (this.coreIndicatorConfig.fields.find(item => item.key === key)?.date) {
           data[key] = new Date(data[key])
         }
       })

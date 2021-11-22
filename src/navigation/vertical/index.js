@@ -3,7 +3,6 @@ const taskView = [
     title: 'Delinquency',
     route: 'task-view-delinquency',
     tag: null,
-    disabled: true,
     tagVariant: 'light-warning',
   },
   {
