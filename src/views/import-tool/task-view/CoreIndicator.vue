@@ -95,6 +95,7 @@
             <template #cell(tag)="data">
               <div lass="d-flex flex-row justify-content-center">
                 <v-select
+                  :value="data.item.tag"
                   class="w-100 input-table"
                   placeholder="Tags"
                   :options="tagsOptions"
