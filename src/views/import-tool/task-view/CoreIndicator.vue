@@ -7,6 +7,13 @@
         >
           <div class="d-flex flex-row">
             <b-button
+              variant="primary"
+              class="btn-icon mr-25"
+              @click="viewData"
+            >
+              <feather-icon icon="RefreshCcwIcon" />
+            </b-button>
+            <b-button
               v-b-modal.modal-config
               variant="primary"
               class="btn-icon"
@@ -351,6 +358,16 @@ export default {
         if (res.status === 200) {
           this.tagsOptions = res.data.tags
         }
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
       })
     },
     column(key) {
@@ -382,7 +399,16 @@ export default {
         if (res.data) {
           this.items = res.data
         }
-      }).catch(() => {
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
         this.loading = false
       })
     },
@@ -425,14 +451,14 @@ export default {
                 })
                 this.viewData()
               }
-            }).catch(() => {
+            }).catch(error => {
               this.loading = false
               this.$toast({
                 component: ToastificationContent,
                 props: {
                   title: 'Error',
                   icon: 'BellIcon',
-                  text: 'Validation Error',
+                  text: error,
                   variant: 'danger',
                 },
               })
@@ -471,7 +497,15 @@ export default {
               this.viewData()
             }
           }).catch(error => {
-            console.log(error)
+            this.$toast({
+              component: ToastificationContent,
+              props: {
+                title: 'Error',
+                icon: 'BellIcon',
+                text: error,
+                variant: 'danger',
+              },
+            })
             this.loading = false
             this.$toast({
               component: ToastificationContent,

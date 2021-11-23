@@ -1,5 +1,7 @@
 import axios from '@axios'
 
+const ERROR_500 = 'Internal Server Error'
+
 // Endpoints
 export default {
   async getCounties() {
@@ -7,7 +9,10 @@ export default {
       const response = await axios.get('/import_tool/counties')
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async getFileTypes(id) {
@@ -15,7 +20,10 @@ export default {
       const response = await axios.get(`/import_tool/filetypes/${id}`)
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async getTags() {
@@ -23,7 +31,10 @@ export default {
       const response = await axios.get('/import_tool/upload_file/get_tags')
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async getAllFileTypes() {
@@ -31,7 +42,10 @@ export default {
       const response = await axios.get('/import_tool/filetypes')
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async uploadFile(type, data) {
@@ -43,7 +57,10 @@ export default {
       })
       return response
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async viewFile(id, pagination) {
@@ -51,7 +68,10 @@ export default {
       const response = await axios.post(`/import_tool/view_file/${id}`, pagination)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async mapColumns(importedFileId, data) {
@@ -59,7 +79,10 @@ export default {
       const response = await axios.post(`/import_tool/upload_file/map_columns/${importedFileId}`, data)
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async commitUpload(importedFileId) {
@@ -67,7 +90,10 @@ export default {
       const response = await axios.post(`/import_tool/upload_file/commit_upload/${importedFileId}`)
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async abortUpload(importedFileId) {
@@ -75,7 +101,10 @@ export default {
       const response = await axios.delete(`/import_tool/upload_file/abort_upload/${importedFileId}`)
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -86,7 +115,10 @@ export default {
       const response = await axios.get('/import_tool/task_view/pending_tasks')
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -95,7 +127,10 @@ export default {
       const response = await axios.get('/import_tool/task_view/tags')
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -104,7 +139,10 @@ export default {
       const response = await axios.get(`/import_tool/task_view/property/folios?query_folio=${query}`)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -113,7 +151,10 @@ export default {
       const response = await axios.post(`/import_tool/task_view/${coreIndicator}/index`, pagination)
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -122,7 +163,10 @@ export default {
       const response = await axios.post(`/import_tool/task_view/${coreIndicator}/update`, core)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -131,7 +175,10 @@ export default {
       const response = await axios.post(`/import_tool/task_view/${coreIndicator}/update/properties`, data)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -140,7 +187,10 @@ export default {
       const response = await axios.delete(`/import_tool/task_view/${coreIndicator}/delete/${id}`)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -154,10 +204,9 @@ export default {
       return { data: response.data, status: response.status }
     } catch (error) {
       if (error.response) {
-        console.log(error.response)
-        return new Error(error.response.data.detail)
+        return Promise.reject(error.response.data.detail)
       }
-      return Promise.reject()
+      return Promise.reject(ERROR_500)
     }
   },
 
@@ -166,7 +215,10 @@ export default {
       const response = await axios.post('/view_file/get_files', pagination)
       return response.data
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async editRow(rowId, data) {
@@ -174,7 +226,10 @@ export default {
       const response = await axios.post(`/view_file/edit_row/${rowId}`, data)
       return response
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async deleteRow(fileId, data) {
@@ -182,7 +237,10 @@ export default {
       const response = await axios.post(`/view_file/delete_tag_row/${fileId}`, data)
       return response
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async addFolioFile(fileId, data) {
@@ -190,7 +248,10 @@ export default {
       const response = await axios.post(`/view_file/add_folio_row/${fileId}`, data)
       return response
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async reviewFile(fileId, data) {
@@ -198,7 +259,10 @@ export default {
       const response = await axios.post(`/view_file/review_tag_row/${fileId}`, data)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async noRealStateFile(fileId, data) {
@@ -206,7 +270,10 @@ export default {
       const response = await axios.post(`/view_file/no_real_state_tag_row/${fileId}`, data)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async taskView(id, pagination) {
@@ -214,7 +281,10 @@ export default {
       const response = await axios.post(`/view_file/task_view/${id}`, pagination)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
   async sendFile(importedFileId) {
@@ -222,7 +292,10 @@ export default {
       const response = await axios.post(`/view_file/send_file/${importedFileId}`)
       return { data: response.data, status: response.status }
     } catch (error) {
-      return Promise.reject()
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
     }
   },
 }

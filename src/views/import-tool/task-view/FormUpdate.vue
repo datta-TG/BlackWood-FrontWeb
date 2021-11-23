@@ -142,6 +142,16 @@ export default {
           this.folioOptions = res.data.folios
         }
         loading(false)
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
       })
     },
     update() {
@@ -181,6 +191,16 @@ export default {
               })
               this.$emit('close')
               this.$emit('reload')
+            }).catch(error => {
+              this.$toast({
+                component: ToastificationContent,
+                props: {
+                  title: 'Error',
+                  icon: 'BellIcon',
+                  text: error,
+                  variant: 'danger',
+                },
+              })
             })
         }
       })

@@ -468,6 +468,16 @@ export default {
             name: tag, value: tag,
           }))
         }
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
       })
     },
     reviewFileSchemaColumn() {
@@ -488,12 +498,32 @@ export default {
     getCounties() {
       services.getCounties().then(res => {
         this.countyOptions = res
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
       })
     },
     getFileTypes() {
       if (this.formFile.county) {
         services.getFileTypes(this.formFile.county).then(res => {
           this.typeOptions = res
+        }).catch(error => {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Error',
+              icon: 'BellIcon',
+              text: error,
+              variant: 'danger',
+            },
+          })
         })
       } else {
         this.typeOptions = []
@@ -566,7 +596,16 @@ export default {
             this.itemsBase = res.data.data.data
           }
         }
-      }).catch(() => {
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
         this.loading = false
       })
     },
@@ -660,7 +699,16 @@ export default {
             this.itemsMapped = res.data.data.data
           }
         }
-      }).catch(() => {
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
         this.loading = false
       })
     },
