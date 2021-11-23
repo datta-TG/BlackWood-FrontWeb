@@ -14,7 +14,7 @@ const router = new VueRouter({
     {
       path: '/',
       name: 'upload-file',
-      component: () => import('@/views/import-tool/UploadFile.vue'),
+      component: () => import('@/views/import-tool/upload/UploadFile.vue'),
       meta: {
         pageTitle: 'Upload File',
         breadcrumb: [
@@ -95,56 +95,6 @@ const router = new VueRouter({
         ],
       },
     },
-    // borrar
-    {
-      path: '/imported-files',
-      name: 'imported-files',
-      component: () => import('@/views/import-tool/ImportedFiles.vue'),
-      meta: {
-        pageTitle: 'Imported Files',
-        breadcrumb: [
-          {
-            text: 'Imported Files',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/imported-file/:id',
-      name: 'imported-file',
-      component: () => import('@/views/import-tool/ImportedFileView.vue'),
-      meta: {
-        pageTitle: 'Imported File',
-        breadcrumb: [
-          {
-            text: 'Imported Files',
-          },
-          {
-            text: 'Imported File',
-            active: true,
-          },
-        ],
-      },
-    },
-    {
-      path: '/task-view/:id',
-      name: 'task-view',
-      component: () => import('@/views/import-tool/TaskView.vue'),
-      meta: {
-        pageTitle: 'Task View',
-        breadcrumb: [
-          {
-            text: 'Imported Files',
-          },
-          {
-            text: 'Task View',
-            active: true,
-          },
-        ],
-      },
-    },
-    // fin borrar
     {
       path: '/login',
       name: 'login',

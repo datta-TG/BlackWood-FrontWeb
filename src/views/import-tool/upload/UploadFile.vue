@@ -331,8 +331,8 @@ import 'prismjs/themes/prism-tomorrow.css'
 import services from '@/plugins/services/import-tool'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import 'vue-form-wizard/dist/vue-form-wizard.min.css'
-import DefaultValues from './upload/DefaultValues.vue'
-import PreviewDataFilter from './upload/PreviewDataFilter.vue'
+import DefaultValues from './DefaultValues.vue'
+import PreviewDataFilter from './PreviewDataFilter.vue'
 
 export default {
   components: {
