@@ -48,6 +48,7 @@ export default {
       update: true,
       select: false,
       date: false,
+      folio: true,
     },
     {
       id: 5,

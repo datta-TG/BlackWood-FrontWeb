@@ -153,6 +153,10 @@ export default {
       const response = await axios.post(`/import_tool/task_view/${coreIndicator}/tag`, data)
       return { data: response.data, status: response.status }
     } catch (error) {
+      if (error.response) {
+        console.log(error.response)
+        return new Error(error.response.data.detail)
+      }
       return Promise.reject()
     }
   },

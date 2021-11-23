@@ -95,7 +95,7 @@
             <template #cell(tag)="data">
               <div lass="d-flex flex-row justify-content-center">
                 <v-select
-                  :value="data.item.tag"
+                  v-model="data.item.tag"
                   class="w-100 input-table"
                   placeholder="Tags"
                   :options="tagsOptions"
@@ -396,48 +396,50 @@ export default {
       this.focusItem = item
     },
     setTag(val) {
-      this.$swal({
-        title: 'Are you sure?',
-        text: val === 'Complete' ? 'Row will be added to the Data Base!' : 'Row will be tagged',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, do it!',
-        customClass: {
-          confirmButton: 'btn btn-success',
-          cancelButton: 'btn btn-secondary ml-1',
-        },
-        buttonsStyling: false,
-      }).then(result => {
-        if (result.value) {
-          this.loading = true
-          services.tagRow(this.coreIndicator, this.focusItem.id, val).then(res => {
-            this.loading = false
-            if (res.status === 200) {
+      if (val !== null) {
+        this.$swal({
+          title: 'Are you sure?',
+          text: val === 'Complete' ? 'Row will be added to the Data Base!' : 'Row will be tagged',
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, do it!',
+          customClass: {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-secondary ml-1',
+          },
+          buttonsStyling: false,
+        }).then(result => {
+          if (result.value) {
+            this.loading = true
+            services.tagRow(this.coreIndicator, this.focusItem.id, val).then(res => {
+              this.loading = false
+              if (res.status === 200) {
+                this.$toast({
+                  component: ToastificationContent,
+                  props: {
+                    title: 'Complete',
+                    icon: 'BellIcon',
+                    text: res.data.message,
+                    variant: 'success',
+                  },
+                })
+                this.viewData()
+              }
+            }).catch(() => {
+              this.loading = false
               this.$toast({
                 component: ToastificationContent,
                 props: {
-                  title: 'Complete',
+                  title: 'Error',
                   icon: 'BellIcon',
-                  text: res.data.message,
-                  variant: 'success',
+                  text: 'Validation Error',
+                  variant: 'danger',
                 },
               })
-              this.viewData()
-            }
-          }).catch(() => {
-            this.loading = false
-            this.$toast({
-              component: ToastificationContent,
-              props: {
-                title: 'Error',
-                icon: 'BellIcon',
-                text: 'Validation Error',
-                variant: 'danger',
-              },
             })
-          })
-        }
-      })
+          }
+        })
+      }
     },
     deleteRow(row) {
       this.$swal({
@@ -468,7 +470,8 @@ export default {
               })
               this.viewData()
             }
-          }).catch(() => {
+          }).catch(error => {
+            console.log(error)
             this.loading = false
             this.$toast({
               component: ToastificationContent,

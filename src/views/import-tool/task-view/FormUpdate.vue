@@ -7,7 +7,7 @@
         cols="12"
       >
         <b-form-group
-          v-if="!field.select && !field.date"
+          v-if="!field.select && !field.date && !field.folio"
           :label="field.label"
           :label-for="field.key"
         >
@@ -40,6 +40,21 @@
             :id="field.key"
             v-model="localData[field.key]"
             class="mb-2"
+          />
+        </b-form-group>
+        <b-form-group
+          v-else-if="field.folio"
+          :label="field.label"
+          :label-for="field.key"
+        >
+          <v-select
+            :id="field.key"
+            v-model="localData[field.key]"
+            class="w-100 mb-2"
+            placeholder="Folio"
+            :filterable="false"
+            :options="folioOptions"
+            @search="onSearch"
           />
         </b-form-group>
       </b-col>
@@ -100,6 +115,7 @@ export default {
   data() {
     return {
       localData: null,
+      folioOptions: [],
     }
   },
   computed: {
@@ -113,6 +129,21 @@ export default {
     },
   },
   methods: {
+    onSearch(search, loading) {
+      if (search.length) {
+        loading(true)
+        this.getFolios(loading, search)
+      }
+    },
+    getFolios(loading, search) {
+      services.foliosMatch(search).then(res => {
+        if (res.status === 200) {
+          // eslint-disable-next-line no-param-reassign
+          this.folioOptions = res.data.folios
+        }
+        loading(false)
+      })
+    },
     update() {
       const data = { ...this.localData }
 
