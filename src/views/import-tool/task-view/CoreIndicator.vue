@@ -5,6 +5,7 @@
         <b-col
           cols="11"
         >
+          {{ settings.skin.value }}
           <div class="d-flex flex-row">
             <b-button
               variant="primary"
@@ -242,6 +243,7 @@
       <b-sidebar
         id="sidebar-edit"
         backdrop-variant="dark"
+        :bg-variant="settings.skin.value"
         backdrop
         width="720px"
         right
@@ -264,6 +266,7 @@
         backdrop-variant="dark"
         backdrop
         width="720px"
+        :bg-variant="settings.skin.value"
         right
         shadow
       >
@@ -291,6 +294,7 @@ import services from '@/plugins/services/import-tool'
 import FormUpdate from '@/views/import-tool/task-view/FormUpdate.vue'
 import FormFolios from '@/views/import-tool/task-view/FormFolios.vue'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import useAppConfig from '@core/app-config/useAppConfig'
 
 export default {
   components: {
@@ -338,6 +342,7 @@ export default {
       loading: false,
       tagsOptions: [],
       focusItem: null,
+      settings: useAppConfig(),
     }
   },
   computed: {
@@ -462,6 +467,7 @@ export default {
                   variant: 'danger',
                 },
               })
+              this.viewData()
             })
           }
         })
@@ -516,6 +522,7 @@ export default {
                 variant: 'danger',
               },
             })
+            this.viewData()
           })
         }
       })
@@ -525,9 +532,6 @@ export default {
 </script>
 
 <style>
-    .b-sidebar {
-        background-color: white !important;
-    }
 
      .table-responsive {
         min-height: 200px;

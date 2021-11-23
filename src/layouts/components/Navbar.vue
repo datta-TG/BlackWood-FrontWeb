@@ -149,9 +149,3 @@ export default {
   },
 }
 </script>
-
-<style>
-.b-sidebar {
-        background-color: white !important;
-    }
-</style>
