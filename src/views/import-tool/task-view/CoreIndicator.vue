@@ -5,7 +5,6 @@
         <b-col
           cols="11"
         >
-          {{ settings.skin.value }}
           <div class="d-flex flex-row">
             <b-button
               variant="primary"
