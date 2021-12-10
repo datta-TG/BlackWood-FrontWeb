@@ -184,10 +184,10 @@ export default {
 
   async deleteCoreIndicator(coreIndicator, id) {
     try {
-      const data = {
+      const dataPayload = {
         ids: [id],
       }
-      const response = await axios.delete(`/import_tool/task_view/${coreIndicator}/delete`, data)
+      const response = await axios.delete(`/import_tool/task_view/${coreIndicator}/delete`, { data: dataPayload })
       return { data: response.data, status: response.status }
     } catch (error) {
       if (error.response) {
