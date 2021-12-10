@@ -97,6 +97,9 @@
             class="mb-2 mw-100"
             show-empty
             empty-text="No records found"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
+            :no-local-sorting="true"
           >
             <!-- Column: tag -->
             <template #cell(tag)="data">
@@ -337,6 +340,8 @@ export default {
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
+      sortBy: 'id',
+      sortDesc: false,
       editData: null,
       loading: false,
       tagsOptions: [],
@@ -350,6 +355,14 @@ export default {
     },
     configData() {
       return this.coreIndicatorData
+    },
+  },
+  watch: {
+    sortBy() {
+      this.viewData()
+    },
+    sortDesc() {
+      this.viewData()
     },
   },
   async mounted() {
@@ -395,6 +408,8 @@ export default {
       const pagination = {
         skip: this.currentPage - 1,
         limit: this.perPage,
+        order_by_column: this.sortBy,
+        order_by_ascending: !this.sortDesc,
       }
 
       services.taskViewCoreIndicator(this.coreIndicator, pagination).then(res => {

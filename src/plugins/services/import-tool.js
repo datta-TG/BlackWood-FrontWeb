@@ -184,7 +184,10 @@ export default {
 
   async deleteCoreIndicator(coreIndicator, id) {
     try {
-      const response = await axios.delete(`/import_tool/task_view/${coreIndicator}/delete/${id}`)
+      const data = {
+        ids: [id],
+      }
+      const response = await axios.delete(`/import_tool/task_view/${coreIndicator}/delete`, data)
       return { data: response.data, status: response.status }
     } catch (error) {
       if (error.response) {
@@ -197,7 +200,7 @@ export default {
   async tagRow(coreIndicator, id, tag) {
     try {
       const data = {
-        id,
+        ids: [id],
         tag,
       }
       const response = await axios.post(`/import_tool/task_view/${coreIndicator}/tag`, data)

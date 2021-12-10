@@ -154,38 +154,50 @@
                 active
               >
                 <b-table
+                  id="mapping-table"
                   :items="itemsMap"
                   :fields="fieldsMap"
                   class="mb-0"
                 >
                   <template #cell(file_schema_column)="data">
-                    <v-select
-                      v-model="data.item.file_schema_column"
-                      placeholder="Select Field To Import"
-                      label="name"
-                      :options="fileSchemaColumns"
-                      :selectable="(option) => !option.selected"
-                      @input="reviewFileSchemaColumn"
-                    >
-                      <template v-slot:option="option">
-                        {{ option.name }}
-                        <span
-                          v-if="option.is_required"
-                          class="text-danger"
-                        >
-                          *
-                        </span>
-                      </template>
-                    </v-select>
+                    <div :style="{ width: '180px' }">
+                      <v-select
+                        v-model="data.item.file_schema_column"
+                        placeholder="Select Field To Import"
+                        label="name"
+                        :options="fileSchemaColumns"
+                        :selectable="(option) => !option.selected"
+                        @input="reviewFileSchemaColumn"
+                      >
+                        <template v-slot:option="option">
+                          {{ option.name }}
+                          <span
+                            v-if="option.is_required"
+                            class="text-danger"
+                          >
+                            *
+                          </span>
+                        </template>
+                      </v-select>
+                    </div>
+
                   </template>
 
                   <template #cell(default_value)="data">
-                    <input
-                      v-model="data.item.default_value"
-                      type="text"
-                      placeholder="Replace Empty Values"
-                      class="input-table form-control no-border w-full"
-                    >
+                    <div :style="{ width: '180px' }">
+                      <b-form-datepicker
+                        v-if="data.item.file_schema_column?data.item.file_schema_column.type === 'date':false"
+                        v-model="data.item.default_value"
+                        class="input-table form-control no-border w-full"
+                      />
+                      <input
+                        v-else
+                        v-model="data.item.default_value"
+                        type="text"
+                        placeholder="Replace Empty Values"
+                        class="input-table form-control no-border w-full"
+                      >
+                    </div>
                   </template>
 
                   <template #cell(type)="data">
@@ -312,6 +324,7 @@ import {
   BCol,
   BFormGroup,
   BForm,
+  BFormDatepicker,
   BButton,
   BFormFile,
   BAlert,
@@ -341,6 +354,7 @@ export default {
     BCol,
     BFormGroup,
     BForm,
+    BFormDatepicker,
     BButton,
     BFormFile,
     vSelect,
@@ -811,6 +825,11 @@ export default {
 .loading {
   position: absolute;
   top: 1em;
+}
+
+.mapping-table {
+  max-width: 100%;
+  overflow-x: scroll;
 }
 
 </style>
