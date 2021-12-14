@@ -583,7 +583,9 @@ export default {
         if ((Boolean(this.formFile.file) || this.formFile.downloadFile) && this.formFile.type) {
           this.loading = true
           const formData = new FormData()
-          formData.append('file', this.formFile.file)
+          if (this.formFile.file) {
+            formData.append('file', this.formFile.file)
+          }
           formData.append('file_schema_id', this.formFile.type)
           formData.append('download_file', this.formFile.downloadFile)
           formData.append('download_url', this.formFile.downloadUrl)
