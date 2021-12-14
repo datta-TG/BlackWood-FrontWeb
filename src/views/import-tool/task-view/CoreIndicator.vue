@@ -224,11 +224,8 @@
             <!-- Optional default data cell scoped slot -->
             <template #cell()="data">
               <div>
-                <p v-if="!data.field.multiple">
-                  {{ data.value }}
-                </p>
                 <ul
-                  v-else
+                  v-if="data.field.multiple"
                 >
                   <li
                     v-for="item in data.item[data.field.key]"
@@ -237,6 +234,12 @@
                     {{ item[data.field.multiple_settings.value] }}
                   </li>
                 </ul>
+                <p v-else-if="data.field.date">
+                  {{ data.value | formatDate() }}
+                </p>
+                <p v-else>
+                  {{ data.value }}
+                </p>
               </div>
             </template>
           </b-table>
@@ -549,6 +552,7 @@ export default {
 
      .table-responsive {
         min-height: 200px;
+        padding-bottom: 120px !important;
       }
 
       .input-table{

@@ -152,6 +152,7 @@ export default {
       visible: true,
       active: true,
       update: false,
+      date: true,
     },
     {
       id: 13,
