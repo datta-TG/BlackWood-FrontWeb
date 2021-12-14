@@ -580,7 +580,7 @@ export default {
     },
     uploadFile() {
       return new Promise((resolve, reject) => {
-        if (Boolean(this.formFile.file) && this.formFile.type) {
+        if ((Boolean(this.formFile.file) || this.formFile.downloadFile) && this.formFile.type) {
           this.loading = true
           const formData = new FormData()
           formData.append('file', this.formFile.file)
@@ -826,7 +826,9 @@ export default {
       this.formFile = {
         county: null,
         type: null,
+        downloadFile: false,
         file: null,
+        downloadUrl: null,
       }
       this.importedFileId = null
       this.columnsData = null
