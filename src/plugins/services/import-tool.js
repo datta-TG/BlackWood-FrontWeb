@@ -48,9 +48,9 @@ export default {
       return Promise.reject(ERROR_500)
     }
   },
-  async uploadFile(type, data) {
+  async uploadFile(data) {
     try {
-      const response = await axios.post(`/import_tool/upload_file/upload?file_schema_id=${type}`, data, {
+      const response = await axios.post('/import_tool/upload_file/upload', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

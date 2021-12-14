@@ -64,18 +64,49 @@
                   />
                 </b-form-group>
               </b-col>
-              <b-col md="12">
+              <b-col md="10">
                 <b-form-group
                   label="File"
                   label-for="mc-file"
                 >
                   <b-form-file
+                    v-if="!formFile.downloadFile"
                     v-model="formFile.file"
                     :state="Boolean(formFile.file)"
                     placeholder="Choose a file or drop it here..."
                     drop-placeholder="Drop file here..."
                   />
+                  <b-form-input
+                    v-else
+                    v-model="formFile.downloadUrl"
+                    placeholder="Type URL here..."
+                  />
                 </b-form-group>
+              </b-col>
+              <b-col md="2">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                  <b-button
+                    v-if="!formFile.downloadFile"
+                    v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+                    type="reset"
+                    size="sm"
+                    variant="outline-primary"
+                    @click="formFile.downloadFile = true"
+                  >
+                    Upload with URL
+                  </b-button>
+                  <b-button
+                    v-else
+                    v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+                    type="reset"
+                    size="sm"
+                    variant="outline-primary"
+                    @click="formFile.downloadFile = false"
+                  >
+                    Upload with file
+                  </b-button>
+                </div>
+
               </b-col>
 
               <!--reset -->
@@ -331,6 +362,7 @@ import {
   BTable,
   BPagination,
   BFormSelect,
+  BFormInput,
   BSpinner,
   BTabs,
   BTab,
@@ -364,6 +396,7 @@ export default {
     BTable,
     BPagination,
     BFormSelect,
+    BFormInput,
     BSpinner,
     BTabs,
     BTab,
@@ -382,7 +415,9 @@ export default {
       formFile: {
         county: null,
         type: null,
+        downloadFile: false,
         file: null,
+        downloadUrl: null,
       },
       loading: false,
       importedFileId: null,
@@ -549,8 +584,11 @@ export default {
           this.loading = true
           const formData = new FormData()
           formData.append('file', this.formFile.file)
+          formData.append('file_schema_id', this.formFile.type)
+          formData.append('download_file', this.formFile.downloadFile)
+          formData.append('download_url', this.formFile.downloadUrl)
           services
-            .uploadFile(this.formFile.type, formData)
+            .uploadFile(formData)
             .then(res => {
               this.loading = false
               this.uploading = true
