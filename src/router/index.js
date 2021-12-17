@@ -96,6 +96,20 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/import-tool/property-master',
+      name: 'import-tool-property-master',
+      component: () => import('@/views/import-tool/property-master/index.vue'),
+      meta: {
+        pageTitle: 'Property Master',
+        breadcrumb: [
+          {
+            text: 'Property Master',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),
