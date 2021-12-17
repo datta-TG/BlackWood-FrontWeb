@@ -124,24 +124,10 @@
         </tab-content>
         <tab-content title="View Data">
           <b-row class="mb-1">
-
-            <b-col cols="12">
-              <b-table
-                responsive
-                bordered
-                :items="itemsBase"
-                :fields="fieldsBase"
-                class="mb-2"
-                show-empty
-                empty-text="No records found"
-              >
-                <!-- Optional default data cell scoped slot -->
-                <template #cell()="data">
-                  {{ data.value }}
-                </template>
-              </b-table>
-            </b-col>
-            <b-col cols="12">
+            <b-col
+              cols="12"
+              class="mb-2"
+            >
               <!-- pagination -->
               <div class="d-flex justify-content-between flex-wrap">
                 <div class="d-flex align-items-center mb-0">
@@ -169,6 +155,22 @@
                 </div>
               </div>
             </b-col>
+            <b-col cols="12">
+              <b-table
+                responsive
+                bordered
+                :items="itemsBase"
+                :fields="fieldsBase"
+                class="mb-2"
+                show-empty
+                empty-text="No records found"
+              >
+                <!-- Optional default data cell scoped slot -->
+                <template #cell()="data">
+                  {{ data.value }}
+                </template>
+              </b-table>
+            </b-col>
           </b-row>
         </tab-content>
         <tab-content
@@ -188,6 +190,7 @@
                   id="mapping-table"
                   :items="itemsMap"
                   :fields="fieldsMap"
+                  responsive
                   class="mb-0"
                 >
                   <template #cell(file_schema_column)="data">
@@ -297,23 +300,10 @@
                 </b-card-text>
               </div>
             </b-col>
-            <b-col cols="12">
-              <b-table
-                responsive
-                bordered
-                :items="itemsMapped"
-                :fields="fieldsMapped"
-                class="mb-2"
-                show-empty
-                empty-text="No records found"
-              >
-                <!-- Optional default data cell scoped slot -->
-                <template #cell()="data">
-                  {{ data.value }}
-                </template>
-              </b-table>
-            </b-col>
-            <b-col cols="12">
+            <b-col
+              cols="12"
+              class="mb-2"
+            >
               <!-- pagination -->
               <div class="d-flex justify-content-between flex-wrap">
                 <div class="d-flex align-items-center mb-0">
@@ -340,6 +330,22 @@
                   />
                 </div>
               </div>
+            </b-col>
+            <b-col cols="12">
+              <b-table
+                responsive
+                bordered
+                :items="itemsMapped"
+                :fields="fieldsMapped"
+                class="mb-2"
+                show-empty
+                empty-text="No records found"
+              >
+                <!-- Optional default data cell scoped slot -->
+                <template #cell()="data">
+                  {{ data.value }}
+                </template>
+              </b-table>
             </b-col>
           </b-row>
         </tab-content>
@@ -464,10 +470,10 @@ export default {
   },
   watch: {
     tagsFilter() {
-      this.viewMappedFile()
+      if (this.uploading) this.viewMappedFile()
     },
     defaultSchemaColumns() {
-      this.reviewFileSchemaColumn()
+      if (this.uploading) this.reviewFileSchemaColumn()
     },
   },
   async mounted() {
@@ -672,8 +678,10 @@ export default {
     },
     validationMap() {
       return new Promise((resolve, reject) => {
+        let ableforMap = true
         this.fileSchemaColumns.forEach(element => {
-          if (element.required && !element.selected) {
+          if (element.is_required && !element.selected) {
+            ableforMap = false
             this.$toast({
               component: ToastificationContent,
               props: {
@@ -686,30 +694,32 @@ export default {
             reject()
           }
         })
-        const mapData = {
-          map_columns: [],
-          file_extra_columns: [],
-          schema_extra_columns: [],
+        if (ableforMap) {
+          const mapData = {
+            map_columns: [],
+            file_extra_columns: [],
+            schema_extra_columns: [],
+          }
+          this.itemsMap.filter(item => item.file_schema_column !== null).forEach(element => {
+            mapData.map_columns.push(
+              {
+                file_column_name: element.file_column_name,
+                file_schema_column_id: element.file_schema_column.id,
+                default_value: element.default_value,
+              },
+            )
+          })
+          this.schemaExtraColumns.forEach(element => {
+            mapData.schema_extra_columns.push(
+              {
+                schema_column_id: element.schema_column_id,
+                default_value: element.default_value,
+              },
+            )
+          })
+          this.mapColumns(mapData)
+          resolve(true)
         }
-        this.itemsMap.filter(item => item.file_schema_column !== null).forEach(element => {
-          mapData.map_columns.push(
-            {
-              file_column_name: element.file_column_name,
-              file_schema_column_id: element.file_schema_column.id,
-              default_value: element.default_value,
-            },
-          )
-        })
-        this.schemaExtraColumns.forEach(element => {
-          mapData.schema_extra_columns.push(
-            {
-              schema_column_id: element.schema_column_id,
-              default_value: element.default_value,
-            },
-          )
-        })
-        this.mapColumns(mapData)
-        resolve(true)
       })
     },
     mapColumns(mapData) {
@@ -824,7 +834,6 @@ export default {
     },
     clearFormWizard() {
       this.uploading = false
-      this.typeOptions = []
       this.formFile = {
         county: null,
         type: null,
@@ -832,6 +841,7 @@ export default {
         file: null,
         downloadUrl: null,
       }
+      this.loading = false
       this.importedFileId = null
       this.columnsData = null
       this.uploadMap = false
@@ -840,15 +850,16 @@ export default {
       this.currentPageBase = 1
       this.fieldsBase = []
       this.itemsBase = []
-      this.unknownColumns = []
-      this.missingColumns = []
-      this.missingColumnsAssing = []
-      this.missingKeyColumns = []
-      this.missingKeyColumnsAssing = []
-      this.keepColumns = []
+      this.itemsMap = []
+      this.fileSchemaColumns = []
+      this.defaultSchemaColumns = []
+      this.schemaExtraColumns = []
+      this.metaInsights = {}
       this.perPageMapped = 10
       this.totalRowsMapped = 1
       this.currentPageMapped = 1
+      this.tagsFilter = []
+      this.tagsOptions = []
       this.fieldsMapped = []
       this.itemsMapped = []
       this.$refs.upload.reset()
@@ -873,5 +884,14 @@ export default {
   max-width: 100%;
   overflow-x: scroll;
 }
+
+.vs__dropdown-menu{
+       max-height:130px;
+     }
+
+.table-responsive {
+        min-height: 200px;
+        padding-bottom: 120px !important;
+      }
 
 </style>
