@@ -33,6 +33,26 @@ export default {
   },
   methods: {
     importMaster() {
+      if (localStorage.getItem('latestImportMaster') === null) {
+        const currentDate = Date.now()
+        localStorage.setItem('latestImportMaster', currentDate)
+      } else {
+        const latestImportMaster = localStorage.getItem('latestImportMaster')
+        const currentDate = Date.now()
+        const diff = Math.abs(latestImportMaster - currentDate) / 3600000
+        if (diff < 2) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Bussy',
+              icon: 'BellIcon',
+              text: 'We are working in another property master, please wait',
+              variant: 'danger',
+            },
+          })
+          return
+        }
+      }
       services.importMaster().then(res => {
         if (res.status === 200) {
           this.$toast({
