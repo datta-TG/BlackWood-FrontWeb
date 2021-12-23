@@ -40,7 +40,7 @@ export default {
         const latestImportMaster = localStorage.getItem('latestImportMaster')
         const currentDate = Date.now()
         const diff = Math.abs(latestImportMaster - currentDate) / 3600000
-        if (diff < 2) {
+        if (diff < 4) {
           this.$toast({
             component: ToastificationContent,
             props: {
@@ -52,6 +52,7 @@ export default {
           })
           return
         }
+        localStorage.setItem('latestImportMaster', currentDate)
       }
       services.importMaster().then(res => {
         if (res.status === 200) {
