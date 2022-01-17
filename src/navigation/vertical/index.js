@@ -48,7 +48,7 @@ export default [
   },
   {
     title: 'Property Stack',
-    route: null,
+    route: 'property-stack',
     icon: 'HomeIcon',
   },
 ]

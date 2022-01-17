@@ -96,6 +96,20 @@ const router = new VueRouter({
       },
     },
     {
+      path: '/property-stack',
+      name: 'property-stack',
+      component: () => import('@/views/property-stack/PropertyStack.vue'),
+      meta: {
+        pageTitle: 'Property Stack',
+        breadcrumb: [
+          {
+            text: 'Property Stack',
+            active: true,
+          },
+        ],
+      },
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),
