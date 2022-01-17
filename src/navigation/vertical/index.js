@@ -37,12 +37,21 @@ export default [
     icon: 'FileIcon',
     children: [
       {
-        title: 'Upload File',
-        route: 'upload-file',
+        title: 'Core Indicators',
+        children: [
+          {
+            title: 'Upload File',
+            route: 'upload-file',
+          },
+          {
+            title: 'Task View',
+            children: taskView,
+          },
+        ],
       },
       {
-        title: 'Task View',
-        children: taskView,
+        title: 'Property Master',
+        route: 'import-tool-property-master',
       },
     ],
   },

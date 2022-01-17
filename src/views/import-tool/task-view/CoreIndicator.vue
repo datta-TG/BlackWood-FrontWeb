@@ -97,6 +97,9 @@
             class="mb-2 mw-100"
             show-empty
             empty-text="No records found"
+            :sort-by.sync="sortBy"
+            :sort-desc.sync="sortDesc"
+            :no-local-sorting="true"
           >
             <!-- Column: tag -->
             <template #cell(tag)="data">
@@ -221,11 +224,8 @@
             <!-- Optional default data cell scoped slot -->
             <template #cell()="data">
               <div>
-                <p v-if="!data.field.multiple">
-                  {{ data.value }}
-                </p>
                 <ul
-                  v-else
+                  v-if="data.field.multiple"
                 >
                   <li
                     v-for="item in data.item[data.field.key]"
@@ -234,6 +234,12 @@
                     {{ item[data.field.multiple_settings.value] }}
                   </li>
                 </ul>
+                <p v-else-if="data.field.date">
+                  {{ data.value | formatDate() }}
+                </p>
+                <p v-else>
+                  {{ data.value }}
+                </p>
               </div>
             </template>
           </b-table>
@@ -337,6 +343,8 @@ export default {
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
+      sortBy: 'id',
+      sortDesc: false,
       editData: null,
       loading: false,
       tagsOptions: [],
@@ -350,6 +358,14 @@ export default {
     },
     configData() {
       return this.coreIndicatorData
+    },
+  },
+  watch: {
+    sortBy() {
+      this.viewData()
+    },
+    sortDesc() {
+      this.viewData()
     },
   },
   async mounted() {
@@ -395,6 +411,8 @@ export default {
       const pagination = {
         skip: this.currentPage - 1,
         limit: this.perPage,
+        order_by_column: this.sortBy,
+        order_by_ascending: !this.sortDesc,
       }
 
       services.taskViewCoreIndicator(this.coreIndicator, pagination).then(res => {
@@ -534,6 +552,7 @@ export default {
 
      .table-responsive {
         min-height: 200px;
+        padding-bottom: 120px !important;
       }
 
       .input-table{

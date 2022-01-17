@@ -25,11 +25,10 @@
             >
               <v-select
                 id="name"
-                v-model="item.schema_column_id"
+                v-model="item.schema_column"
                 class="style-chooser"
                 label="name"
                 placeholder="Select Field To Import"
-                :reduce="item => item.id"
                 :options="fileSchemaColumns"
                 :selectable="(option) => !option.selected"
                 @input="reviewFileSchemaColumn"
@@ -53,13 +52,21 @@
               label="Value"
               label-for="value"
             >
-              <input
-                id="value"
-                v-model="item.default_value"
-                type="text"
-                placeholder="Replace Empty Values"
-                class="input-table form-control no-border w-full"
-              >
+              <div>
+                <b-form-datepicker
+                  v-if="item.schema_column?item.schema_column.type === 'date':false"
+                  v-model="item.default_value"
+                  class="input-table form-control no-border w-full"
+                />
+                <input
+                  v-else
+                  id="value"
+                  v-model="item.default_value"
+                  type="text"
+                  placeholder="Replace Empty Values"
+                  class="input-table form-control no-border w-full"
+                >
+              </div>
             </b-form-group>
           </b-col>
 
@@ -89,6 +96,7 @@
 
       </b-form>
     </div>
+    <div />
     <b-button
       v-ripple.400="'rgba(255, 255, 255, 0.15)'"
       variant="primary"
@@ -105,7 +113,7 @@
 
 <script>
 import {
-  BForm, BFormGroup, BRow, BCol, BButton,
+  BForm, BFormGroup, BRow, BCol, BButton, BFormDatepicker,
 } from 'bootstrap-vue'
 import { heightTransition } from '@core/mixins/ui/transition'
 import Ripple from 'vue-ripple-directive'
@@ -119,6 +127,7 @@ export default {
     BButton,
     BFormGroup,
     vSelect,
+    BFormDatepicker,
   },
   directives: {
     Ripple,
@@ -154,6 +163,7 @@ export default {
   },
   watch: {
     items() {
+      this.idForFileSchema()
       this.$emit('update:schemaExtraColumns', this.items)
     },
   },
@@ -167,7 +177,16 @@ export default {
     window.removeEventListener('resize', this.initTrHeight)
   },
   methods: {
+    idForFileSchema() {
+      this.items.forEach(item => {
+        if (item.schema_column !== null) {
+          // eslint-disable-next-line no-param-reassign
+          item.schema_column_id = item.schema_column.id
+        }
+      })
+    },
     reviewFileSchemaColumn() {
+      this.idForFileSchema()
       const defaultSchemaColumns = []
       this.items.forEach(element => {
         if (element.schema_column_id) {
@@ -180,6 +199,7 @@ export default {
       this.items.push({
         id: this.nextTodoId += this.nextTodoId,
         schema_column_id: null,
+        schema_column: null,
         default_value: null,
       })
 

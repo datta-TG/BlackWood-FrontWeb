@@ -64,18 +64,49 @@
                   />
                 </b-form-group>
               </b-col>
-              <b-col md="12">
+              <b-col md="10">
                 <b-form-group
                   label="File"
                   label-for="mc-file"
                 >
                   <b-form-file
+                    v-if="!formFile.downloadFile"
                     v-model="formFile.file"
                     :state="Boolean(formFile.file)"
                     placeholder="Choose a file or drop it here..."
                     drop-placeholder="Drop file here..."
                   />
+                  <b-form-input
+                    v-else
+                    v-model="formFile.downloadUrl"
+                    placeholder="Type URL here..."
+                  />
                 </b-form-group>
+              </b-col>
+              <b-col md="2">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                  <b-button
+                    v-if="!formFile.downloadFile"
+                    v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+                    type="reset"
+                    size="sm"
+                    variant="outline-primary"
+                    @click="formFile.downloadFile = true"
+                  >
+                    Upload with URL
+                  </b-button>
+                  <b-button
+                    v-else
+                    v-ripple.400="'rgba(186, 191, 199, 0.15)'"
+                    type="reset"
+                    size="sm"
+                    variant="outline-primary"
+                    @click="formFile.downloadFile = false"
+                  >
+                    Upload with file
+                  </b-button>
+                </div>
+
               </b-col>
 
               <!--reset -->
@@ -93,24 +124,10 @@
         </tab-content>
         <tab-content title="View Data">
           <b-row class="mb-1">
-
-            <b-col cols="12">
-              <b-table
-                responsive
-                bordered
-                :items="itemsBase"
-                :fields="fieldsBase"
-                class="mb-2"
-                show-empty
-                empty-text="No records found"
-              >
-                <!-- Optional default data cell scoped slot -->
-                <template #cell()="data">
-                  {{ data.value }}
-                </template>
-              </b-table>
-            </b-col>
-            <b-col cols="12">
+            <b-col
+              cols="12"
+              class="mb-2"
+            >
               <!-- pagination -->
               <div class="d-flex justify-content-between flex-wrap">
                 <div class="d-flex align-items-center mb-0">
@@ -138,6 +155,22 @@
                 </div>
               </div>
             </b-col>
+            <b-col cols="12">
+              <b-table
+                responsive
+                bordered
+                :items="itemsBase"
+                :fields="fieldsBase"
+                class="mb-2"
+                show-empty
+                empty-text="No records found"
+              >
+                <!-- Optional default data cell scoped slot -->
+                <template #cell()="data">
+                  {{ data.value }}
+                </template>
+              </b-table>
+            </b-col>
           </b-row>
         </tab-content>
         <tab-content
@@ -154,38 +187,51 @@
                 active
               >
                 <b-table
+                  id="mapping-table"
                   :items="itemsMap"
                   :fields="fieldsMap"
+                  responsive
                   class="mb-0"
                 >
                   <template #cell(file_schema_column)="data">
-                    <v-select
-                      v-model="data.item.file_schema_column"
-                      placeholder="Select Field To Import"
-                      label="name"
-                      :options="fileSchemaColumns"
-                      :selectable="(option) => !option.selected"
-                      @input="reviewFileSchemaColumn"
-                    >
-                      <template v-slot:option="option">
-                        {{ option.name }}
-                        <span
-                          v-if="option.is_required"
-                          class="text-danger"
-                        >
-                          *
-                        </span>
-                      </template>
-                    </v-select>
+                    <div :style="{ width: '180px' }">
+                      <v-select
+                        v-model="data.item.file_schema_column"
+                        placeholder="Select Field To Import"
+                        label="name"
+                        :options="fileSchemaColumns"
+                        :selectable="(option) => !option.selected"
+                        @input="reviewFileSchemaColumn"
+                      >
+                        <template v-slot:option="option">
+                          {{ option.name }}
+                          <span
+                            v-if="option.is_required"
+                            class="text-danger"
+                          >
+                            *
+                          </span>
+                        </template>
+                      </v-select>
+                    </div>
+
                   </template>
 
                   <template #cell(default_value)="data">
-                    <input
-                      v-model="data.item.default_value"
-                      type="text"
-                      placeholder="Replace Empty Values"
-                      class="input-table form-control no-border w-full"
-                    >
+                    <div :style="{ width: '180px' }">
+                      <b-form-datepicker
+                        v-if="data.item.file_schema_column?data.item.file_schema_column.type === 'date':false"
+                        v-model="data.item.default_value"
+                        class="input-table form-control no-border w-full"
+                      />
+                      <input
+                        v-else
+                        v-model="data.item.default_value"
+                        type="text"
+                        placeholder="Replace Empty Values"
+                        class="input-table form-control no-border w-full"
+                      >
+                    </div>
                   </template>
 
                   <template #cell(type)="data">
@@ -254,23 +300,10 @@
                 </b-card-text>
               </div>
             </b-col>
-            <b-col cols="12">
-              <b-table
-                responsive
-                bordered
-                :items="itemsMapped"
-                :fields="fieldsMapped"
-                class="mb-2"
-                show-empty
-                empty-text="No records found"
-              >
-                <!-- Optional default data cell scoped slot -->
-                <template #cell()="data">
-                  {{ data.value }}
-                </template>
-              </b-table>
-            </b-col>
-            <b-col cols="12">
+            <b-col
+              cols="12"
+              class="mb-2"
+            >
               <!-- pagination -->
               <div class="d-flex justify-content-between flex-wrap">
                 <div class="d-flex align-items-center mb-0">
@@ -298,6 +331,22 @@
                 </div>
               </div>
             </b-col>
+            <b-col cols="12">
+              <b-table
+                responsive
+                bordered
+                :items="itemsMapped"
+                :fields="fieldsMapped"
+                class="mb-2"
+                show-empty
+                empty-text="No records found"
+              >
+                <!-- Optional default data cell scoped slot -->
+                <template #cell()="data">
+                  {{ data.value }}
+                </template>
+              </b-table>
+            </b-col>
           </b-row>
         </tab-content>
       </form-wizard>
@@ -312,12 +361,14 @@ import {
   BCol,
   BFormGroup,
   BForm,
+  BFormDatepicker,
   BButton,
   BFormFile,
   BAlert,
   BTable,
   BPagination,
   BFormSelect,
+  BFormInput,
   BSpinner,
   BTabs,
   BTab,
@@ -341,6 +392,7 @@ export default {
     BCol,
     BFormGroup,
     BForm,
+    BFormDatepicker,
     BButton,
     BFormFile,
     vSelect,
@@ -350,6 +402,7 @@ export default {
     BTable,
     BPagination,
     BFormSelect,
+    BFormInput,
     BSpinner,
     BTabs,
     BTab,
@@ -368,7 +421,9 @@ export default {
       formFile: {
         county: null,
         type: null,
+        downloadFile: false,
         file: null,
+        downloadUrl: null,
       },
       loading: false,
       importedFileId: null,
@@ -415,10 +470,10 @@ export default {
   },
   watch: {
     tagsFilter() {
-      this.viewMappedFile()
+      if (this.uploading) this.viewMappedFile()
     },
     defaultSchemaColumns() {
-      this.reviewFileSchemaColumn()
+      if (this.uploading) this.reviewFileSchemaColumn()
     },
   },
   async mounted() {
@@ -531,12 +586,17 @@ export default {
     },
     uploadFile() {
       return new Promise((resolve, reject) => {
-        if (Boolean(this.formFile.file) && this.formFile.type) {
+        if ((Boolean(this.formFile.file) || this.formFile.downloadFile) && this.formFile.type) {
           this.loading = true
           const formData = new FormData()
-          formData.append('file', this.formFile.file)
+          if (this.formFile.file) {
+            formData.append('file', this.formFile.file)
+          }
+          formData.append('file_schema_id', this.formFile.type)
+          formData.append('download_file', this.formFile.downloadFile)
+          formData.append('download_url', this.formFile.downloadUrl)
           services
-            .uploadFile(this.formFile.type, formData)
+            .uploadFile(formData)
             .then(res => {
               this.loading = false
               this.uploading = true
@@ -618,8 +678,10 @@ export default {
     },
     validationMap() {
       return new Promise((resolve, reject) => {
+        let ableforMap = true
         this.fileSchemaColumns.forEach(element => {
-          if (element.required && !element.selected) {
+          if (element.is_required && !element.selected) {
+            ableforMap = false
             this.$toast({
               component: ToastificationContent,
               props: {
@@ -632,30 +694,32 @@ export default {
             reject()
           }
         })
-        const mapData = {
-          map_columns: [],
-          file_extra_columns: [],
-          schema_extra_columns: [],
+        if (ableforMap) {
+          const mapData = {
+            map_columns: [],
+            file_extra_columns: [],
+            schema_extra_columns: [],
+          }
+          this.itemsMap.filter(item => item.file_schema_column !== null).forEach(element => {
+            mapData.map_columns.push(
+              {
+                file_column_name: element.file_column_name,
+                file_schema_column_id: element.file_schema_column.id,
+                default_value: element.default_value,
+              },
+            )
+          })
+          this.schemaExtraColumns.forEach(element => {
+            mapData.schema_extra_columns.push(
+              {
+                schema_column_id: element.schema_column_id,
+                default_value: element.default_value,
+              },
+            )
+          })
+          this.mapColumns(mapData)
+          resolve(true)
         }
-        this.itemsMap.filter(item => item.file_schema_column !== null).forEach(element => {
-          mapData.map_columns.push(
-            {
-              file_column_name: element.file_column_name,
-              file_schema_column_id: element.file_schema_column.id,
-              default_value: element.default_value,
-            },
-          )
-        })
-        this.schemaExtraColumns.forEach(element => {
-          mapData.schema_extra_columns.push(
-            {
-              schema_column_id: element.schema_column_id,
-              default_value: element.default_value,
-            },
-          )
-        })
-        this.mapColumns(mapData)
-        resolve(true)
       })
     },
     mapColumns(mapData) {
@@ -770,12 +834,14 @@ export default {
     },
     clearFormWizard() {
       this.uploading = false
-      this.typeOptions = []
       this.formFile = {
         county: null,
         type: null,
+        downloadFile: false,
         file: null,
+        downloadUrl: null,
       }
+      this.loading = false
       this.importedFileId = null
       this.columnsData = null
       this.uploadMap = false
@@ -784,15 +850,16 @@ export default {
       this.currentPageBase = 1
       this.fieldsBase = []
       this.itemsBase = []
-      this.unknownColumns = []
-      this.missingColumns = []
-      this.missingColumnsAssing = []
-      this.missingKeyColumns = []
-      this.missingKeyColumnsAssing = []
-      this.keepColumns = []
+      this.itemsMap = []
+      this.fileSchemaColumns = []
+      this.defaultSchemaColumns = []
+      this.schemaExtraColumns = []
+      this.metaInsights = {}
       this.perPageMapped = 10
       this.totalRowsMapped = 1
       this.currentPageMapped = 1
+      this.tagsFilter = []
+      this.tagsOptions = []
       this.fieldsMapped = []
       this.itemsMapped = []
       this.$refs.upload.reset()
@@ -812,5 +879,19 @@ export default {
   position: absolute;
   top: 1em;
 }
+
+.mapping-table {
+  max-width: 100%;
+  overflow-x: scroll;
+}
+
+.vs__dropdown-menu{
+       max-height:130px;
+     }
+
+.table-responsive {
+        min-height: 200px;
+        padding-bottom: 120px !important;
+      }
 
 </style>
