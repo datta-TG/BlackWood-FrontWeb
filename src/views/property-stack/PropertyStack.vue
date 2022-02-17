@@ -82,7 +82,7 @@
       </b-col>
       <!------ SideBar Options ------>
       <b-col>
-        <app-collapse type="margin">
+        <app-collapse type="default">
           <app-collapse-item title="Saved Filters">
             <b-form-radio-group
               v-model="value"
@@ -92,41 +92,37 @@
               name="radio-validation"
             />
           </app-collapse-item>
-          <app-collapse-item title="Indicators">
-            <b-form-checkbox-group
-              id="checkbox-group-1"
-              v-model="selected"
-              :options="indicators"
-              name="indicators"
-              class="d-flex flex-column"
-            />
-          </app-collapse-item>
-          <app-collapse-item title="Indicators2">
-            <b-form-checkbox-group
-              id="checkbox-group-1"
-              v-model="selected"
-              :options="indicators"
-              name="indicators"
-              class="d-flex flex-column"
-            />
-          </app-collapse-item>
-          <app-collapse-item title="Indicators3">
-            <b-form-checkbox-group
-              id="checkbox-group-1"
-              v-model="selected"
-              :options="indicators"
-              name="indicators"
-              class="d-flex flex-column"
-            />
-          </app-collapse-item>
-          <app-collapse-item title="Indicators4">
-            <b-form-checkbox-group
-              id="checkbox-group-1"
-              v-model="selected"
-              :options="indicators"
-              name="indicators"
-              class="d-flex flex-column"
-            />
+          <app-collapse-item
+            v-for="section, idx in schemasFilter"
+            :key="idx"
+            :title="section.section"
+          >
+            <!-- Separar componente -->
+            <app-collapse type="margin">
+              <app-collapse-item
+                v-for="table, idx_table in section.tables"
+                :key="idx_table"
+                :title="table.table_name"
+              >
+                <b-form-group
+                  v-for="item, idx_item in table.items"
+                  :key="idx_item"
+                  :label="item.name"
+                  :label-for="item.name"
+                >
+                  <b-form-datepicker
+                    v-if="item.type == 'date' || item.type == 'datetime'"
+                    :id="item.name"
+                  />
+                  <b-form-input
+                    v-else
+                    :id="item.name"
+                    :placeholder="item.name"
+                  />
+                </b-form-group>
+              </app-collapse-item>
+            </app-collapse>
+            <!-- Fin separa componente -->
           </app-collapse-item>
         </app-collapse>
       </b-col>
@@ -149,16 +145,18 @@ import {
   BSidebar,
   VBToggle,
   BButton,
+  BFormGroup,
   BInputGroup,
   BFormInput,
   BInputGroupAppend,
   BInputGroupPrepend,
   BFormRadioGroup,
-  BFormCheckboxGroup,
+  BFormDatepicker,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
+import services from '@/plugins/services/property-stack'
 import StackTable from './components/StackTable.vue'
 import StackFilters from './components/StackFilters.vue'
 import StackModalInfo from './components/StackModalInfo.vue'
@@ -171,14 +169,15 @@ export default {
     BCol,
     BSidebar,
     BButton,
+    BFormGroup,
     BInputGroup,
     BFormInput,
     BInputGroupAppend,
     BInputGroupPrepend,
+    BFormDatepicker,
     AppCollapse,
     AppCollapseItem,
     BFormRadioGroup,
-    BFormCheckboxGroup,
     StackTable,
     StackFilters,
     StackModalInfo,
@@ -191,21 +190,25 @@ export default {
     return {
       value: null,
       data,
-      savedFilters: [
-        { text: 'Filter 1', value: 'first' },
-        { text: 'Filter 2', value: 'second' },
-        { text: 'Filter 3', value: 'third' },
-      ],
-      indicators: [
-        { text: 'Indicator 1', value: 'first' },
-        { text: 'Indicator 2', value: 'second' },
-        { text: 'Indicator 3', value: 'third' },
-      ],
+      savedFilters: [],
+      schemasFilter: {},
     }
   },
   computed: {
     state() {
       return Boolean(this.value)
+    },
+  },
+  async mounted() {
+    await this.getSchemas()
+  },
+  methods: {
+    getSchemas() {
+      services.getSchemas().then(res => {
+        this.schemasFilter = res
+      }).catch(error => {
+        console.log(error)
+      })
     },
   },
 }
