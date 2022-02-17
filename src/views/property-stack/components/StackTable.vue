@@ -473,9 +473,11 @@ export default {
       }
     },
     openTable(row) {
+      // eslint-disable-next-line no-console
       console.log(row)
     },
     showInfo(row) {
+      // eslint-disable-next-line no-console
       console.log(row)
     },
   },

@@ -207,6 +207,7 @@ export default {
       services.getSchemas().then(res => {
         this.schemasFilter = res
       }).catch(error => {
+        // eslint-disable-next-line no-console
         console.log(error)
       })
     },
