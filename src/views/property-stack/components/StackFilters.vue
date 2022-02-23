@@ -41,189 +41,57 @@
         </b-input-group>
       </b-row>
     </b-col>
-    <app-collapse type="margin">
-      <div class="listInModal">
-        <app-collapse-item
-          title="Saved Filters"
-          class="mr-1"
+    <app-collapse type="default">
+      <b-row>
+        <b-col
+          sm="6"
+          class="mb-2"
         >
-          <b-form-radio-group
-            v-model="value"
-            :options="savedFilters"
-            :state="state"
-            class="d-flex flex-column"
-            name="radio-validation"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators"
-          class="mr-1"
+          <app-collapse-item
+            title="Saved Filters"
+          >
+            <div />
+          </app-collapse-item>
+        </b-col>
+        <b-col
+          v-for="section, idx in schemasFilter"
+          :key="idx"
+          sm="6"
+          class="mb-2"
         >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators2"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators3"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators4"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Saved Filters"
-          class="mr-1"
-        >
-          <b-form-radio-group
-            v-model="value"
-            :options="savedFilters"
-            :state="state"
-            class="d-flex flex-column"
-            name="radio-validation"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators2"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators3"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators4"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Saved Filters"
-          class="mr-1"
-        >
-          <b-form-radio-group
-            v-model="value"
-            :options="savedFilters"
-            :state="state"
-            class="d-flex flex-column"
-            name="radio-validation"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators2"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators3"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-        <app-collapse-item
-          title="Indicators4"
-          class="mr-1"
-        >
-          <b-form-checkbox-group
-            id="checkbox-group-1"
-            v-model="selected"
-            :options="indicators"
-            name="indicators"
-            class="d-flex flex-column"
-          />
-        </app-collapse-item>
-      </div>
+          <app-collapse-item
+
+            :title="section.section"
+          >
+            <!-- Separar componente -->
+            <app-collapse type="margin">
+              <app-collapse-item
+                v-for="table, idx_table in section.tables"
+                :key="idx_table"
+                :title="table.table_name"
+              >
+                <b-form-group
+                  v-for="item, idx_item in table.items"
+                  :key="idx_item"
+                  :label="item.name"
+                  :label-for="item.name"
+                >
+                  <b-form-datepicker
+                    v-if="item.type == 'date' || item.type == 'datetime'"
+                    :id="item.name"
+                  />
+                  <b-form-input
+                    v-else
+                    :id="item.name"
+                    :placeholder="item.name"
+                  />
+                </b-form-group>
+              </app-collapse-item>
+            </app-collapse>
+            <!-- Fin separa componente -->
+          </app-collapse-item>
+        </b-col>
+      </b-row>
     </app-collapse>
   </b-modal>
 </template>
@@ -237,8 +105,6 @@ import {
   BFormInput,
   BInputGroupAppend,
   BInputGroupPrepend,
-  BFormRadioGroup,
-  BFormCheckboxGroup,
   BModal,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
@@ -256,27 +122,21 @@ export default {
     BInputGroupPrepend,
     AppCollapse,
     AppCollapseItem,
-    BFormRadioGroup,
-    BFormCheckboxGroup,
     BModal,
   },
   directives: {
     'b-toggle': VBToggle,
     Ripple,
   },
+  props: {
+    schemasFilter: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
       value: null,
-      savedFilters: [
-        { text: 'Filter 1', value: 'first' },
-        { text: 'Filter 2', value: 'second' },
-        { text: 'Filter 3', value: 'third' },
-      ],
-      indicators: [
-        { text: 'Indicator 1', value: 'first' },
-        { text: 'Indicator 2', value: 'second' },
-        { text: 'Indicator 3', value: 'third' },
-      ],
     }
   },
   computed: {

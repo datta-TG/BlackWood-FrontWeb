@@ -45,7 +45,7 @@
               variant="primary"
               class="mr-1"
             >
-              Aply
+              Apply
             </b-button>
             <b-button
               v-ripple.400="'rgba(113, 102, 240, 0.15)'"
@@ -129,7 +129,7 @@
     </b-sidebar>
     <stack-modal-info />
     <!------ Modal with filters ------>
-    <stack-filters />
+    <stack-filters :schemas-filter="schemasFilter" />
     <stack-table
       :core-indicator-data="data"
       core-indicator="property_stack"
