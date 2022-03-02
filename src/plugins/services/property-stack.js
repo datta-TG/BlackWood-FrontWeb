@@ -16,4 +16,15 @@ export default {
       return Promise.reject(ERROR_500)
     }
   },
+  async index(pagination) {
+    try {
+      const response = await axios.post('/property_stack/index', pagination)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
+    }
+  },
 }

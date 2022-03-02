@@ -130,10 +130,7 @@
     <stack-modal-info />
     <!------ Modal with filters ------>
     <stack-filters :schemas-filter="schemasFilter" />
-    <stack-table
-      :core-indicator-data="data"
-      core-indicator="property_stack"
-    />
+    <stack-table />
   </b-card>
 </template>
 
@@ -160,7 +157,6 @@ import services from '@/plugins/services/property-stack'
 import StackTable from './components/StackTable.vue'
 import StackFilters from './components/StackFilters.vue'
 import StackModalInfo from './components/StackModalInfo.vue'
-import data from './data/index'
 
 export default {
   components: {
@@ -189,7 +185,6 @@ export default {
   data() {
     return {
       value: null,
-      data,
       savedFilters: [],
       schemasFilter: {},
     }
