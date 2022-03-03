@@ -7,6 +7,9 @@
       }
     }
     > tbody {
+      tr {
+        font-size: small;
+      }
       .b-table-row-selected {
         &.table-active {
           td {

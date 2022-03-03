@@ -283,11 +283,22 @@ export default {
     },
     viewData() {
       this.loading = true
+
+      const tables = new Set()
+      this.fields.forEach(item => {
+        console.log(item)
+        if (item.table) {
+          tables.add(item.table)
+        }
+      })
+      const joins = Array.from(tables.values())
+
       const pagination = {
         skip: this.currentPage - 1,
         limit: this.perPage,
         order_by_column: this.sortBy,
         order_by_ascending: !this.sortDesc,
+        joins,
       }
 
       services.index(pagination).then(res => {

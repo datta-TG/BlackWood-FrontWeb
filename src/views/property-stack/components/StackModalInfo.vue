@@ -811,8 +811,11 @@
             show-empty
             empty-text="No records found"
           />
+        </b-tab>
+        <b-tab title="Call History">
           <h3>Call history</h3>
           <b-table
+            responsive
             :items="[{FullName: 'Richard', Relationship: 'Relationship', Date: 'Date', Direction: 'Direction', CallFrom: 'CallFrom', CustomerName: 'CustomerName', AgentName: 'AgentName', CampaignName: 'CampaignName', CallResult: 'CallResult', Duration: 'Duration'}]"
             bordered
             class="p-2 mw-100"
