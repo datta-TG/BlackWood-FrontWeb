@@ -286,7 +286,6 @@ export default {
 
       const tables = new Set()
       this.fields.forEach(item => {
-        console.log(item)
         if (item.table) {
           tables.add(item.table)
         }
