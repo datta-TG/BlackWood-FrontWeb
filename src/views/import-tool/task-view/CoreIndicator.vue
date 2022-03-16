@@ -103,10 +103,10 @@
           >
             <!-- Column: tag -->
             <template #cell(tag)="data">
-              <div lass="d-flex flex-row justify-content-center">
+              <div class="d-flex flex-row justify-content-center w-140">
                 <v-select
                   v-model="data.item.tag"
-                  class="w-100 input-table"
+                  class="input-table"
                   placeholder="Tags"
                   :options="tagsOptions"
                   @input="setTag"
@@ -558,4 +558,7 @@ export default {
       .input-table{
         min-width: 100px;
 }
+      .w-140 {
+        width: 140px;
+      }
 </style>
