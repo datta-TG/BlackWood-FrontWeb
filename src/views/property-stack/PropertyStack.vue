@@ -110,15 +110,32 @@
                   :label="item.name"
                   :label-for="item.name"
                 >
-                  <b-form-datepicker
-                    v-if="item.type == 'date' || item.type == 'datetime'"
-                    :id="item.name"
-                  />
-                  <b-form-input
-                    v-else
-                    :id="item.name"
-                    :placeholder="item.name"
-                  />
+                  <b-input-group>
+                    <b-input-group-prepend>
+                      <b-dropdown
+                        text="="
+                        variant="outline-primary"
+                      >
+                        <b-dropdown-item
+                          v-for="action in filtersOption"
+                          :key="action.operation"
+                        >
+                          {{ action.operation }}
+                        </b-dropdown-item>
+
+                      </b-dropdown>
+                    </b-input-group-prepend>
+                    <b-form-datepicker
+                      v-if="item.type == 'date' || item.type == 'datetime'"
+                      :id="item.name"
+                      :placeholder="item.name"
+                    />
+                    <b-form-input
+                      v-else
+                      :id="item.name"
+                      :placeholder="item.name"
+                    />
+                  </b-input-group>
                 </b-form-group>
               </app-collapse-item>
             </app-collapse>
@@ -149,6 +166,8 @@ import {
   BInputGroupPrepend,
   BFormRadioGroup,
   BFormDatepicker,
+  BDropdown,
+  BDropdownItem,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
@@ -177,6 +196,8 @@ export default {
     StackTable,
     StackFilters,
     StackModalInfo,
+    BDropdown,
+    BDropdownItem,
   },
   directives: {
     'b-toggle': VBToggle,
@@ -187,6 +208,17 @@ export default {
       value: null,
       savedFilters: [],
       schemasFilter: {},
+      filtersOption: [
+        { operation: '=' },
+        { operation: '>' },
+        { operation: '<' },
+        { operation: '>=' },
+        { operation: '<=' },
+        { operation: '<>' },
+        { operation: 'Between' },
+        { operation: 'Like' },
+        { operation: 'In' },
+      ],
     }
   },
   computed: {

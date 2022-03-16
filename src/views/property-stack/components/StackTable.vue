@@ -113,38 +113,25 @@
             <!-- Column: Actions -->
             <template #cell(actions)="data">
               <div class="d-flex flex-row justify-content-center">
-                <b-dropdown
-                  variant="link"
-                  toggle-class="text-decoration-none"
-                  no-caret
+                <b-button
+                  v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                  variant="outline-primary"
+                  size="sm"
+                  class="mr-1"
+                  @click="data.toggleDetails"
                 >
-                  <template v-slot:button-content>
-                    <feather-icon
-                      icon="MoreVerticalIcon"
-                      size="16"
-                      class="text-body align-middle mr-25"
-                    />
-                  </template>
-                  <b-dropdown-item
-                    @click="data.toggleDetails"
-                  >
-                    <feather-icon
-                      icon="UsersIcon"
-                      class="mr-50"
-                    />
-                    <span>People</span>
-                  </b-dropdown-item>
-                  <b-dropdown-item
-                    v-b-modal.modal-2
-                    @click="showInfo(data.item)"
-                  >
-                    <feather-icon
-                      icon="FileIcon"
-                      class="mr-50"
-                    />
-                    <span>Info</span>
-                  </b-dropdown-item>
-                </b-dropdown>
+                  <span class="align-middle">People</span>
+                </b-button>
+                <b-button
+                  v-b-modal.modal-2
+                  v-ripple.400="'rgba(113, 102, 240, 0.15)'"
+                  variant="outline-primary"
+                  size="sm"
+                  @click="showInfo(data.item)"
+                >
+                  <span class="align-middle">Info</span>
+                </b-button>
+
               </div>
             </template>
 
@@ -188,10 +175,11 @@
 
 <script>
 import {
-  BCard, BTable, BRow, BCol, BPagination, BFormSelect, BButton, BModal, VBModal, BFormCheckbox, BFormGroup, VBToggle, BDropdown, BDropdownItem, BSpinner,
+  BCard, BTable, BRow, BCol, BPagination, BFormSelect, BButton, BModal, VBModal, BFormCheckbox, BFormGroup, VBToggle, BSpinner,
 } from 'bootstrap-vue'
 import services from '@/plugins/services/property-stack'
 import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
+import Ripple from 'vue-ripple-directive'
 import propertyStackData from './data/index'
 
 export default {
@@ -206,13 +194,12 @@ export default {
     BModal,
     BFormCheckbox,
     BFormGroup,
-    BDropdown,
-    BDropdownItem,
     BSpinner,
   },
   directives: {
     'b-modal': VBModal,
     'b-toggle': VBToggle,
+    Ripple,
   },
   props: {
     coreIndicator: {

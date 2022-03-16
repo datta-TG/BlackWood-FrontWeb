@@ -318,33 +318,19 @@ export default {
       table: 'indicators_master', tableName: 'Indicators', id: 113, key: 'phone_available', label: 'PhoneAvailable', sortable: true, visible: true, active: false, date: false,
     },
     {
-      table: 'probate', tableName: 'Probate', id: 114, key: 'case_number', label: 'case_number', sortable: true, visible: true, active: false, date: false,
-    }, {
-      table: 'probate', tableName: 'Probate', id: 115, key: 'date_filed', label: 'date_filed', sortable: true, visible: true, active: false, date: false,
+      table: 'probate', tableName: 'Probate', id: 114, key: 'probate', label: 'probate', sortable: true, visible: true, active: false, date: false,
     },
     {
-      table: 'eviction', tableName: 'Eviction', id: 116, key: 'case_number', label: 'case_number', sortable: true, visible: true, active: false, date: false,
-    }, {
-      table: 'eviction', tableName: 'Eviction', id: 117, key: 'date_filed', label: 'date_filed', sortable: true, visible: true, active: false, date: false,
+      table: 'eviction', tableName: 'Eviction', id: 116, key: 'eviction', label: 'eviction', sortable: true, visible: true, active: false, date: false,
     },
     {
-      table: 'foreclosure', tableName: 'Foreclosure', id: 118, key: 'case_number', label: 'case_number', sortable: true, visible: true, active: false, date: false,
-    }, {
-      table: 'foreclosure', tableName: 'Foreclosure', id: 119, key: 'date_filed', label: 'date_filed', sortable: true, visible: true, active: false, date: false,
+      table: 'foreclosure', tableName: 'Foreclosure', id: 118, key: 'foreclosure', label: 'foreclosure', sortable: true, visible: true, active: false, date: false,
     },
     {
-      table: 'tax_auction', tableName: 'Tax Auction', id: 120, key: 'case_number', label: 'case_number', sortable: true, visible: true, active: false, date: false,
-    }, {
-      table: 'tax_auction', tableName: 'Tax Auction', id: 121, key: 'sale_date', label: 'sale_date', sortable: true, visible: true, active: false, date: false,
+      table: 'tax_auction', tableName: 'Tax Auction', id: 120, key: 'tax auction', label: 'tax auction', sortable: true, visible: true, active: false, date: false,
     },
     {
-      table: 'tax_delinquency', tableName: 'Tax Delinquency', id: 122, key: 'earliest_year', label: 'earliest_year', sortable: true, visible: true, active: false, date: false,
-    }, {
-      table: 'tax_delinquency', tableName: 'Tax Delinquency', id: 123, key: 'lastest_year', label: 'lastest_year', sortable: true, visible: true, active: false, date: false,
-    }, {
-      table: 'tax_delinquency', tableName: 'Tax Delinquency', id: 124, key: 'count_tax_year', label: 'count_tax_year', sortable: true, visible: true, active: false, date: false,
-    }, {
-      table: 'tax_delinquency', tableName: 'Tax Delinquency', id: 125, key: 'sum_amount', label: 'sum_amount', sortable: true, visible: true, active: false, date: false,
+      table: 'tax_delinquency', tableName: 'Tax Delinquency', id: 122, key: 'tax delinquency', label: 'tax delinquency', sortable: true, visible: true, active: false, date: false,
     },
     {
       table: 'call_history', tableName: 'Call History', id: 126, key: 'date', label: 'date', sortable: true, visible: true, active: false, date: false,
