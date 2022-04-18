@@ -18,9 +18,15 @@
           <b-input-group-prepend is-text>
             <feather-icon icon="SearchIcon" />
           </b-input-group-prepend>
-          <b-form-input placeholder="Search" />
+          <b-form-input
+            v-model="search"
+            placeholder="Search"
+          />
           <b-input-group-append>
-            <b-button variant="outline-primary">
+            <b-button
+              variant="outline-primary"
+              @click="applySearch"
+            >
               Search
             </b-button>
           </b-input-group-append>
@@ -44,6 +50,7 @@
               size="sm"
               variant="primary"
               class="mr-1"
+              @click="applyFilters"
             >
               Apply
             </b-button>
@@ -52,6 +59,7 @@
               size="sm"
               variant="outline-secondary"
               class="mr-1"
+              @click="clear"
             >
               Clear
             </b-button>
@@ -71,9 +79,14 @@
             <b-input-group-prepend is-text>
               <feather-icon icon="SearchIcon" />
             </b-input-group-prepend>
-            <b-form-input placeholder="Button on both side" />
+            <b-form-input
+
+              placeholder="Button on both side"
+            />
             <b-input-group-append>
-              <b-button variant="outline-primary">
+              <b-button
+                variant="outline-primary"
+              >
                 Search
               </b-button>
             </b-input-group-append>
@@ -113,12 +126,13 @@
                   <b-input-group>
                     <b-input-group-prepend>
                       <b-dropdown
-                        text="="
+                        :text="item.operation?item.operation:'='"
                         variant="outline-primary"
                       >
                         <b-dropdown-item
                           v-for="action in filtersOption"
                           :key="action.operation"
+                          @click="applyOperation(item,action.operation)"
                         >
                           {{ action.operation }}
                         </b-dropdown-item>
@@ -128,11 +142,13 @@
                     <b-form-datepicker
                       v-if="item.type == 'date' || item.type == 'datetime'"
                       :id="item.name"
+                      v-model="item.value"
                       :placeholder="item.name"
                     />
                     <b-form-input
                       v-else
                       :id="item.name"
+                      v-model="item.value"
                       :placeholder="item.name"
                     />
                   </b-input-group>
@@ -147,7 +163,7 @@
     <stack-modal-info />
     <!------ Modal with filters ------>
     <stack-filters :schemas-filter="schemasFilter" />
-    <stack-table />
+    <stack-table :filter="filter" />
   </b-card>
 </template>
 
@@ -207,7 +223,9 @@ export default {
     return {
       value: null,
       savedFilters: [],
-      schemasFilter: {},
+      schemasFilter: [],
+      filter: {},
+      search: '',
       filtersOption: [
         { operation: '=' },
         { operation: '>' },
@@ -215,7 +233,6 @@ export default {
         { operation: '>=' },
         { operation: '<=' },
         { operation: '<>' },
-        { operation: 'Between' },
         { operation: 'Like' },
         { operation: 'In' },
       ],
@@ -237,6 +254,46 @@ export default {
         // eslint-disable-next-line no-console
         console.log(error)
       })
+    },
+    applyOperation(item, operation) {
+      // eslint-disable-next-line no-param-reassign
+      item.operation = operation
+      this.schemasFilter = [...this.schemasFilter]
+    },
+    applySearch() {
+      this.filter = {}
+      if (this.search) {
+        this.filter.property = {
+          table_name: 'property',
+          items: [
+            {
+              name: 'folio',
+              value: this.search,
+            },
+          ],
+        }
+      }
+    },
+    applyFilters() {
+      this.filter = {}
+      this.schemasFilter.forEach(section => {
+        section.tables.forEach(table => {
+          let some = false
+          this.filter[table.table_name] = { table_name: table.table_name, items: [] }
+          table.items.forEach(item => {
+            if (item.value) {
+              some = true
+              this.filter[table.table_name].items.push({ ...item })
+            }
+          })
+          if (!some) {
+            delete this.filter[table.table_name]
+          }
+        })
+      })
+    },
+    clear() {
+      this.filter = {}
     },
   },
 }

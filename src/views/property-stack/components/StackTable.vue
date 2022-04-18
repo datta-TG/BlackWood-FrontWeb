@@ -3,7 +3,7 @@
     <b-card>
       <b-row class="mb-1">
         <b-col
-          cols="11"
+          cols="12"
         >
           <div class="d-flex flex-row">
             <b-button
@@ -20,16 +20,6 @@
             >
               <feather-icon icon="SettingsIcon" />
             </b-button>
-          </div>
-        </b-col>
-        <b-col cols="1">
-          <div class="d-flex justify-content-end">
-            <b-spinner
-              v-if="loading"
-              label="Loading..."
-              class="loading"
-              variant="primary"
-            />
           </div>
         </b-col>
       </b-row>
@@ -109,7 +99,17 @@
             :sort-by.sync="sortBy"
             :sort-desc.sync="sortDesc"
             :no-local-sorting="true"
+            :busy="loading"
           >
+            <template #table-busy>
+              <div class="text-center text-primary my-2">
+                <b-spinner
+                  class="align-middle"
+                  variant="primary"
+                />
+                <strong> Loading...</strong>
+              </div>
+            </template>
             <!-- Column: Actions -->
             <template #cell(actions)="data">
               <div class="d-flex flex-row justify-content-center">
@@ -202,15 +202,16 @@ export default {
     Ripple,
   },
   props: {
-    coreIndicator: {
-      type: String,
-      default: '',
+    filter: {
+      type: Object,
+      default: () => {},
     },
   },
   data() {
     return {
       fields: propertyStackData.fields.filter(item => item.active),
       items: [],
+      tables: [],
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
@@ -234,11 +235,38 @@ export default {
     sortDesc() {
       this.viewData()
     },
+    filter() {
+      Object.entries(this.filter).forEach(table => {
+        if (table[0] !== 'property') {
+          if (!(this.tables.includes(table[0]))) {
+            this.tables.push(table[0])
+          }
+        }
+      })
+      this.viewData()
+    },
+    fields() {
+      const tables = []
+      this.fields.forEach(field => {
+        if (field.table !== 'property' && field.key !== 'actions') {
+          if (tables.indexOf(field.table) === -1) {
+            tables.push(field.table)
+          }
+        }
+      })
+      if (!this.arraysEqual(this.tables, tables)) {
+        this.tables = tables
+        this.viewData()
+      }
+    },
   },
   async mounted() {
     await this.viewData()
   },
   methods: {
+    arraysEqual(a1, a2) {
+      return JSON.stringify(a1) === JSON.stringify(a2)
+    },
     column(key) {
       const object = propertyStackData.fields.find(field => field.key === key)
       if (object !== undefined) {
@@ -271,20 +299,13 @@ export default {
     viewData() {
       this.loading = true
 
-      const tables = new Set()
-      this.fields.forEach(item => {
-        if (item.table) {
-          tables.add(item.table)
-        }
-      })
-      const joins = Array.from(tables.values())
-
       const pagination = {
         skip: this.currentPage - 1,
         limit: this.perPage,
         order_by_column: this.sortBy,
         order_by_ascending: !this.sortDesc,
-        joins,
+        tables: this.tables,
+        filter: this.filter,
       }
 
       services.index(pagination).then(res => {
