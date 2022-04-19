@@ -212,6 +212,7 @@ export default {
       fields: propertyStackData.fields.filter(item => item.active),
       items: [],
       tables: [],
+      coreIndicatorTables: [],
       perPage: 10,
       totalRows: 1,
       currentPage: 1,
@@ -247,15 +248,30 @@ export default {
     },
     fields() {
       const tables = []
+      const coreIndicatorTables = []
       this.fields.forEach(field => {
         if (field.table !== 'property' && field.key !== 'actions') {
-          if (tables.indexOf(field.table) === -1) {
-            tables.push(field.table)
+          if (field.type === 'master') {
+            if (tables.indexOf(field.table) === -1) {
+              tables.push(field.table)
+            }
+          } else if (field.type === 'core_indicator') {
+            if (coreIndicatorTables.indexOf(field.table) === -1) {
+              coreIndicatorTables.push(field.table)
+            }
           }
         }
       })
+      let update = false
       if (!this.arraysEqual(this.tables, tables)) {
         this.tables = tables
+        update = true
+      }
+      if (!this.arraysEqual(this.coreIndicatorTables, coreIndicatorTables)) {
+        this.coreIndicatorTables = coreIndicatorTables
+        update = true
+      }
+      if (update) {
         this.viewData()
       }
     },
@@ -305,6 +321,7 @@ export default {
         order_by_column: this.sortBy,
         order_by_ascending: !this.sortDesc,
         tables: this.tables,
+        core_indicators_tables: this.coreIndicatorTables,
         filter: this.filter,
       }
 
