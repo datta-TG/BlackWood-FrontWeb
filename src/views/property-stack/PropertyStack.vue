@@ -276,6 +276,7 @@ export default {
     },
     applyFilters() {
       this.filter = {}
+      this.search = ''
       this.schemasFilter.forEach(section => {
         section.tables.forEach(table => {
           let some = false
@@ -284,6 +285,7 @@ export default {
             if (item.value) {
               some = true
               this.filter[table.table_name].items.push({ ...item })
+              this.filter[table.table_name].section = section.section
             }
           })
           if (!some) {

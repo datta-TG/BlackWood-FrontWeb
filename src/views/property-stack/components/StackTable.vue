@@ -239,8 +239,14 @@ export default {
     filter() {
       Object.entries(this.filter).forEach(table => {
         if (table[0] !== 'property') {
-          if (!(this.tables.includes(table[0]))) {
-            this.tables.push(table[0])
+          if (table[1].section === 'Master') {
+            if (!(this.tables.includes(table[0]))) {
+              this.tables.push(table[0])
+            }
+          } else if (table[1].section === 'Core Indicators') {
+            if (!(this.coreIndicatorTables.includes(table[0]))) {
+              this.coreIndicatorTables.push(table[0])
+            }
           }
         }
       })
