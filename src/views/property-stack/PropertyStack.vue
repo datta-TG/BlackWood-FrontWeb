@@ -69,6 +69,7 @@
               size="sm"
               variant="outline-primary"
               class="btn-icon"
+              hidden
             >
               <feather-icon icon="Maximize2Icon" />
             </b-button>
@@ -143,7 +144,8 @@
                       v-if="item.type == 'date' || item.type == 'datetime'"
                       :id="item.name"
                       v-model="item.value"
-                      :placeholder="item.name"
+                      placeholder="Choose a date"
+                      :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
                     />
                     <b-form-input
                       v-else
@@ -224,6 +226,7 @@ export default {
       value: null,
       savedFilters: [],
       schemasFilter: [],
+      schemas: [],
       filter: {},
       search: '',
       filtersOption: [
@@ -249,7 +252,8 @@ export default {
   methods: {
     getSchemas() {
       services.getSchemas().then(res => {
-        this.schemasFilter = res
+        this.schemas = JSON.parse(JSON.stringify(res))
+        this.schemasFilter = JSON.parse(JSON.stringify(res))
       }).catch(error => {
         // eslint-disable-next-line no-console
         console.log(error)
@@ -258,7 +262,7 @@ export default {
     applyOperation(item, operation) {
       // eslint-disable-next-line no-param-reassign
       item.operation = operation
-      this.schemasFilter = [...this.schemasFilter]
+      this.schemasFilter = JSON.parse(JSON.stringify(this.schemasFilter))
     },
     applySearch() {
       this.filter = {}
@@ -296,6 +300,7 @@ export default {
     },
     clear() {
       this.filter = {}
+      this.schemasFilter = JSON.parse(JSON.stringify(this.schemas))
     },
   },
 }

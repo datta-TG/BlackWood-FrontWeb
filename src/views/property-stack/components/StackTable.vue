@@ -250,6 +250,7 @@ export default {
           }
         }
       })
+      this.currentPage = 1
       this.viewData()
     },
     fields() {
@@ -278,6 +279,7 @@ export default {
         update = true
       }
       if (update) {
+        this.currentPage = 1
         this.viewData()
       }
     },
