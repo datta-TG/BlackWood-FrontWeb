@@ -27,4 +27,37 @@ export default {
       return Promise.reject(ERROR_500)
     }
   },
+  async getSavedFilters() {
+    try {
+      const response = await axios.get('/property_stack/filters')
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
+    }
+  },
+  async saveFilter(filter) {
+    try {
+      const response = await axios.post('/property_stack/filters/add', filter)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
+    }
+  },
+  async removeFilter(filter) {
+    try {
+      const response = await axios.post('/property_stack/filters/remove', filter)
+      return { data: response.data, status: response.status }
+    } catch (error) {
+      if (error.response) {
+        return Promise.reject(error.response.data.detail)
+      }
+      return Promise.reject(ERROR_500)
+    }
+  },
 }

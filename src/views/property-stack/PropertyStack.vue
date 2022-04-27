@@ -98,13 +98,60 @@
       <b-col>
         <app-collapse type="default">
           <app-collapse-item title="Saved Filters">
-            <b-form-radio-group
-              v-model="value"
-              :options="savedFilters"
-              :state="state"
-              class="d-flex flex-column"
-              name="radio-validation"
-            />
+            <app-collapse type="margin">
+              <app-collapse-item
+                v-for="(table, key) in savedFilters"
+                :key="key"
+                :title="table[0]"
+              >
+                <b-form-group
+                  v-for="item, idx_item in table[1]"
+                  :key="idx_item"
+                  :label="item.column_name"
+                  :label-for="item.column_name"
+                >
+                  <b-input-group>
+                    <b-input-group-prepend>
+                      <b-dropdown
+                        :text="item.operation?item.operation:'='"
+                        variant="outline-primary"
+                      >
+                        <b-dropdown-item
+                          v-for="action in filtersOption"
+                          :key="action.operation"
+                          @click="applyOperationSavedFilter(item,action.operation)"
+                        >
+                          {{ action.operation }}
+                        </b-dropdown-item>
+
+                        <b-dropdown-divider />
+
+                        <b-dropdown-item
+                          variant="danger"
+                          @click="removeFilter(item.id)"
+                        >
+                          Remove Filter
+                        </b-dropdown-item>
+
+                      </b-dropdown>
+                    </b-input-group-prepend>
+                    <b-form-datepicker
+                      v-if="item.type == 'date' || item.type == 'datetime'"
+                      :id="item.column_name"
+                      v-model="item.value"
+                      placeholder="Choose a date"
+                      :date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                    />
+                    <b-form-input
+                      v-else
+                      :id="item.column_name"
+                      v-model="item.value"
+                      :placeholder="item.column_name"
+                    />
+                  </b-input-group>
+                </b-form-group>
+              </app-collapse-item>
+            </app-collapse>
           </app-collapse-item>
           <app-collapse-item
             v-for="section, idx in schemasFilter"
@@ -136,6 +183,15 @@
                           @click="applyOperation(item,action.operation)"
                         >
                           {{ action.operation }}
+                        </b-dropdown-item>
+
+                        <b-dropdown-divider />
+
+                        <b-dropdown-item
+                          variant="success"
+                          @click="saveFilter(table, item)"
+                        >
+                          Save Filter
                         </b-dropdown-item>
 
                       </b-dropdown>
@@ -182,15 +238,16 @@ import {
   BFormInput,
   BInputGroupAppend,
   BInputGroupPrepend,
-  BFormRadioGroup,
   BFormDatepicker,
   BDropdown,
   BDropdownItem,
+  BDropdownDivider,
 } from 'bootstrap-vue'
 import Ripple from 'vue-ripple-directive'
 import AppCollapse from '@core/components/app-collapse/AppCollapse.vue'
 import AppCollapseItem from '@core/components/app-collapse/AppCollapseItem.vue'
 import services from '@/plugins/services/property-stack'
+import ToastificationContent from '@core/components/toastification/ToastificationContent.vue'
 import StackTable from './components/StackTable.vue'
 import StackFilters from './components/StackFilters.vue'
 import StackModalInfo from './components/StackModalInfo.vue'
@@ -210,12 +267,12 @@ export default {
     BFormDatepicker,
     AppCollapse,
     AppCollapseItem,
-    BFormRadioGroup,
     StackTable,
     StackFilters,
     StackModalInfo,
     BDropdown,
     BDropdownItem,
+    BDropdownDivider,
   },
   directives: {
     'b-toggle': VBToggle,
@@ -225,6 +282,7 @@ export default {
     return {
       value: null,
       savedFilters: [],
+      savedFiltersData: [],
       schemasFilter: [],
       schemas: [],
       filter: {},
@@ -248,8 +306,22 @@ export default {
   },
   async mounted() {
     await this.getSchemas()
+    await this.getSavedFilters()
   },
   methods: {
+    groupBy(list, keyGetter) {
+      const map = new Map()
+      list.forEach(item => {
+        const key = keyGetter(item)
+        const collection = map.get(key)
+        if (!collection) {
+          map.set(key, [item])
+        } else {
+          collection.push(item)
+        }
+      })
+      return map
+    },
     getSchemas() {
       services.getSchemas().then(res => {
         this.schemas = JSON.parse(JSON.stringify(res))
@@ -259,10 +331,88 @@ export default {
         console.log(error)
       })
     },
+    getSavedFilters() {
+      services.getSavedFilters().then(res => {
+        const filters = res.data.data
+        const groupedFilters = Array.from(this.groupBy(filters, field => field.table_name))
+        this.savedFilters = JSON.parse(JSON.stringify(groupedFilters))
+        this.savedFiltersData = JSON.parse(JSON.stringify(groupedFilters))
+      }).catch(error => {
+        // eslint-disable-next-line no-console
+        console.log(error)
+      })
+    },
+    saveFilter(table, item) {
+      const data = {
+        filter: {
+          table_name: table.table_name,
+          column_name: item.name,
+          type: item.type,
+        },
+      }
+      services.saveFilter(data).then(res => {
+        if (res.status === 200) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Added',
+              icon: 'BellIcon',
+              text: res.data.message,
+              variant: 'success',
+            },
+          })
+          this.getSavedFilters()
+        }
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
+      })
+    },
+    removeFilter(id) {
+      const data = {
+        id,
+      }
+      services.removeFilter(data).then(res => {
+        if (res.status === 200) {
+          this.$toast({
+            component: ToastificationContent,
+            props: {
+              title: 'Added',
+              icon: 'BellIcon',
+              text: res.data.message,
+              variant: 'success',
+            },
+          })
+          this.getSavedFilters()
+        }
+      }).catch(error => {
+        this.$toast({
+          component: ToastificationContent,
+          props: {
+            title: 'Error',
+            icon: 'BellIcon',
+            text: error,
+            variant: 'danger',
+          },
+        })
+      })
+    },
     applyOperation(item, operation) {
       // eslint-disable-next-line no-param-reassign
       item.operation = operation
       this.schemasFilter = JSON.parse(JSON.stringify(this.schemasFilter))
+    },
+    applyOperationSavedFilter(item, operation) {
+      // eslint-disable-next-line no-param-reassign
+      item.operation = operation
+      this.savedFilters = JSON.parse(JSON.stringify(this.savedFilters))
     },
     applySearch() {
       this.filter = {}
@@ -281,15 +431,38 @@ export default {
     applyFilters() {
       this.filter = {}
       this.search = ''
+
+      this.savedFilters.forEach(table => {
+        let some = false
+        this.filter[table[0]] = { table_name: table[0], items: [] }
+        table[1].forEach(item => {
+          if (item.value) {
+            // eslint-disable-next-line no-param-reassign
+            item.name = item.column_name
+            some = true
+            this.filter[table[0]].items.push({ ...item })
+          }
+        })
+        if (!some) {
+          delete this.filter[table[0]]
+        }
+      })
+
       this.schemasFilter.forEach(section => {
         section.tables.forEach(table => {
           let some = false
-          this.filter[table.table_name] = { table_name: table.table_name, items: [] }
+          if (!(table.table_name in this.filter)) {
+            this.filter[table.table_name] = { table_name: table.table_name, items: [] }
+          }
           table.items.forEach(item => {
-            if (item.value) {
+            if (this.filter[table.table_name].items.find(column => column.name === item.name) === undefined) {
+              if (item.value) {
+                some = true
+                this.filter[table.table_name].items.push({ ...item })
+                this.filter[table.table_name].section = section.section
+              }
+            } else {
               some = true
-              this.filter[table.table_name].items.push({ ...item })
-              this.filter[table.table_name].section = section.section
             }
           })
           if (!some) {
@@ -301,6 +474,7 @@ export default {
     clear() {
       this.filter = {}
       this.schemasFilter = JSON.parse(JSON.stringify(this.schemas))
+      this.savedFilters = JSON.parse(JSON.stringify(this.savedFiltersData))
     },
   },
 }
