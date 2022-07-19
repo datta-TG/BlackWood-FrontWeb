@@ -81,7 +81,7 @@
               <feather-icon icon="SearchIcon" />
             </b-input-group-prepend>
             <b-form-input
-
+              v-model="searchFilter"
               placeholder="Button on both side"
             />
             <b-input-group-append>
@@ -287,6 +287,7 @@ export default {
       schemas: [],
       filter: {},
       search: '',
+      searchFilter: '',
       filtersOption: [
         { operation: '=' },
         { operation: '>' },

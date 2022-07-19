@@ -61,6 +61,7 @@
                     :reduce="(type) => type.file_schema_id"
                     placeholder="File Type"
                     :options="typeOptions"
+                    @input="setFileTypeName"
                   />
                 </b-form-group>
               </b-col>
@@ -204,7 +205,7 @@
                         @input="reviewFileSchemaColumn"
                       >
                         <template v-slot:option="option">
-                          {{ option.name }}
+                          {{ option.name === 'case status' ? 'pre'+formFile.typeName+' status': option.name }}
                           <span
                             v-if="option.is_required"
                             class="text-danger"
@@ -421,6 +422,7 @@ export default {
       formFile: {
         county: null,
         type: null,
+        typeName: '',
         downloadFile: false,
         file: null,
         downloadUrl: null,
@@ -516,6 +518,10 @@ export default {
     }
   },
   methods: {
+    setFileTypeName(e) {
+      const fileType = this.typeOptions.filter(type => type.file_schema_id === e)[0]
+      this.formFile.typeName = fileType.file_type_name
+    },
     getTags() {
       services.getTags().then(res => {
         if (res.status === 200) {
